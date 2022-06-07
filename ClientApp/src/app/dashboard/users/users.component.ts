@@ -273,7 +273,41 @@ export class UsersComponent implements OnInit {
               value: user ? user.image : undefined,
 
             },
-            
+            {
+              title: "Addons",
+              name: "values",
+              controlType: ControlTypes.TableBuilder,
+              width: "100%",
+              value:   [],
+              controls: [
+                {
+                  title: undefined,
+                  controls: [
+                    {
+                      title: "Name",
+                      name: "title",
+                      icon:"utensils icon",
+                      controlType: ControlTypes.TextInput,
+                      width: "50%"
+                    },
+                    {
+                      title: "Value",
+                      icon:"dollar sign icon",
+                      name: "value",
+                      controlType: ControlTypes.TextInput,
+                      width: "50%"
+                    }
+                  ],
+                }
+              ],
+              // validators: [
+              //   Validators.required,
+              //   Validators.maxLength(25),
+              // ]
+            },
+  
+  
+  
             
           ]
         }

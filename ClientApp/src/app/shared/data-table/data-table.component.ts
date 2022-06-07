@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { Column } from './models/column.model';
 @Component({
   selector: 'data-table',
@@ -14,13 +14,14 @@ export class DataTableComponent implements OnInit {
   @Output('pageIndexChanged') pageIndexChanged = new EventEmitter<number>();
   @Input('total-items') totalItems = 1;
   @Input('page-size') pageSize = 1;
+  @Input("show-footer") showFooter = true;
   @Output('sortChange') sortChange = new EventEmitter<object>();
   sortProp = "lastUpdate";
   ascending = false;
   openTableModal = false;
   resizers: NodeListOf<HTMLElement>;
   cols: NodeListOf<HTMLElement>;
-  constructor() {
+  constructor(@Inject("DIRECTION") public direction:string) {
 
   }
   openTableSetting() {
@@ -69,7 +70,6 @@ export class DataTableComponent implements OnInit {
       document.removeEventListener('mousemove', mouseMoveHandler);
       document.removeEventListener('mouseup', mouseUpHandler);
     };
-
     resizer.addEventListener('mousedown', mouseDownHandler);
   }
   ngOnInit(): void {

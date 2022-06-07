@@ -23,7 +23,6 @@
         "@angular/router": "^11.2.10",
         "@aspnet/signalr": "^1.0.27",
         "@nguniversal/module-map-ngfactory-loader": "8.1.1",
-        "@types/simple-peer": "^9.6.3",
         "animate.css": "^4.1.1",
         "aspnet-prerendering": "^3.0.1",
         "bootstrap": "^4.6.0",
@@ -41,7 +40,11 @@
         "summernote": "^0.8.18",
         "ts-node": "~8.4.1",
         "tslint": "~5.20.0",
-        "zone.js": "0.9.1"
+        "zone.js": "0.9.1",
+        "@agm/core": "^1.1.0",
+        "@swimlane/ngx-charts": "^19.0.0",
+        "@types/d3-shape": "^3.0.2"
+
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "^0.1102.9",

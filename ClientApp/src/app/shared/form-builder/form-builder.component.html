@@ -1,4 +1,11 @@
 <div class="ui form">
+    <div *ngIf="innerForm" class="inner-form-header">
+        <div class="title">{{title}}</div>
+        <div [disabled]="formGroup.valid == false" (click)="onSubmit()" class="ui primary left icon button">
+            Add
+            <i class="plus  icon"></i>
+        </div>
+    </div>
     <ng-container *ngFor="let group of ControlsGroups">
         <h4 *ngIf="group.title" class="ui dividing header">{{group.title}}</h4>
         <div class="form-fields">
@@ -101,13 +108,40 @@
                         <custom-summernote-editor [editorId]="control.name" (htmlContentChange)="editorChange(control.name,$event)" [htmlContent]="control.value"></custom-summernote-editor>
 
                     </div>
+                    <!-- 10. Table Builder -->
+                    <div style="padding: 15px 25px;margin: 10px 10px;background-color: #f5f4f4;border-radius: 12px;" *ngIf="control.controlType ==  controlTypes.TableBuilder">
+                        <form-builder (submit)="innerFormAdd($event,control.value)" [title]="control.title" [inner-form]="true" [control-groups]="control.controls"></form-builder>
+                        <data-table [cell-template]="cellTemplate" [show-footer]="false" [cols]="mapControlsToCols(control.controls)" [rows]="control.value">
+                            <ng-template #cellTemplate let-rowData="rowData" let-data="cellData" let-col="colIndex" let-row="rowIndex">
+                                <ng-container [ngSwitch]="col">
+                                    <ng-container *ngSwitchCase="mapControlsToCols(control.controls)?.length -  1">
+                                        <button (click)="innerFormRemove(rowData,control.value)" class="ui button red icon">
+                                                <i class="la las-trash"></i>
+                                                Remove
+                                            </button>
+                                    </ng-container>
+                                    <div *ngSwitchDefault>{{data}}</div>
+                                </ng-container>
+
+                            </ng-template>
+                        </data-table>
+                    </div>
+                    <!-- 11. Map Location -->
+                    <div class="field" *ngIf="control.controlType ==  controlTypes.MapPicker">
+                        <label>{{control.title}}</label>
+                        <div class="map-container">
+                            <agm-map (mapClick)="changeMarkCoords($event,control)" [latitude]="lat" [longitude]="long" [zoom]="zoom">
+                                <agm-marker [latitude]="lat" [longitude]="long"></agm-marker>
+                            </agm-map>
+                        </div>
+                    </div>
                 </div>
             </div>
 
         </div>
 
     </ng-container>
-    <div class="ui buttons">
+    <div   *ngIf="innerForm == false" class="ui buttons">
         <button (click)="onCancel()" class="ui button">
             <i class="times  icon"></i>
             Cancel</button>
