@@ -25,10 +25,12 @@
                         "styles": [
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
                             "node_modules/summernote/dist/summernote-lite.min.css",
+                            "semantic/dist/semantic.min.css",
                             "src/styles.scss"
                         ],
                         "scripts": [
                             "node_modules/jquery/dist/jquery.min.js",
+                            "semantic/dist/semantic.min.js",
                             "node_modules/summernote/dist/summernote-lite.min.js"
                         ],
                         "stylePreprocessorOptions": {

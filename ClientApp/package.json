@@ -1,6 +1,6 @@
 {
     "name": "apiplate",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
@@ -38,7 +38,6 @@
         "popper.js": "^1.16.0",
         "protractor": "~5.4.2",
         "rxjs": "^6.6.3",
-        "semantic-ui-css": "^2.4.1",
         "simple-peer": "^9.11.0",
         "summernote": "^0.8.18",
         "ts-node": "~8.4.1",

@@ -10,14 +10,7 @@
         }
     ],
     "configurations": [
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Launch Chrome",
-            "url": "https://localhost:5001",
-            "sourceMaps": true,
-            "webRoot": "${workspaceRoot}/ClientApp"
-        },
+       
         {
             "name": ".NET Core Launch (console)",
             "type": "coreclr",
