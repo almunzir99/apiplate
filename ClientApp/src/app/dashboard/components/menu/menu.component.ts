@@ -69,13 +69,13 @@ export class MenuComponent implements OnInit {
   selectItem(index: number, group: MenuGroup, childIndex = -1) {
     if(this.loading)
     return;
-    this.loading = true;
     var item = group.children[index];
     if (item.children != undefined && childIndex == -1) {
       item.open = !item.open;
       return;
     }
     if (item.open && childIndex != -1) {
+    this.loading = true;
       var childItem = item.children[childIndex];
       this.router.navigate([childItem.route]).then(c => {
         this.loading = false;
@@ -88,6 +88,7 @@ export class MenuComponent implements OnInit {
 
 
     }
+    this.loading = true;
     this.router.navigate([item.route]).then(c => {
       this.loading = false;
       this.selectedMenuItem = item;
