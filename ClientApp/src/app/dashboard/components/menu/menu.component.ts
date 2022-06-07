@@ -15,6 +15,7 @@ export class MenuComponent implements OnInit {
   menuItems = MenuList;
   selectedMenuItem!: MenuItem;
   currentUser: User;
+  loading = false;
   @Input('opened') opened = true;
   @Output("menuItemChange") menuItemChange = new EventEmitter<any>();
   constructor(private router: Router, private authService: AuthService, @Inject("DIRECTION") public direction: string) {
@@ -66,29 +67,36 @@ export class MenuComponent implements OnInit {
   ngOnInit(): void {
   }
   selectItem(index: number, group: MenuGroup, childIndex = -1) {
-    console.log(childIndex);
+    if(this.loading)
+    return;
+    this.loading = true;
     var item = group.children[index];
     if (item.children != undefined && childIndex == -1) {
       item.open = !item.open;
       return;
     }
-    if(item.open && childIndex != -1)
-    {
+    if (item.open && childIndex != -1) {
       var childItem = item.children[childIndex];
-      this.router.navigate([childItem.route]);
-      this.selectedMenuItem = childItem;
-      this.menuItemChange.emit({
-        group: group.title,
-        page: childItem.title
-      })
+      this.router.navigate([childItem.route]).then(c => {
+        this.loading = false;
+        this.selectedMenuItem = childItem;
+        this.menuItemChange.emit({
+          group: group.title,
+          page: childItem.title
+        })
+      });
+
 
     }
-    this.router.navigate([item.route]);
-    this.selectedMenuItem = item;
-    this.menuItemChange.emit({
-      group: group.title,
-      page: item.title
-    })
+    this.router.navigate([item.route]).then(c => {
+      this.loading = false;
+      this.selectedMenuItem = item;
+      this.menuItemChange.emit({
+        group: group.title,
+        page: item.title
+      })
+    });
+
 
   }
 
