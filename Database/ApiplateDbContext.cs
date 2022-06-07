@@ -1,15 +1,23 @@
+using System.Linq;
 using apiplate.Domain.Models;
 using apiplate.Helpers;
 using Microsoft.EntityFrameworkCore;
 
-namespace apiplate.DataBase{
-    public class ApiplateDbContext : DbContext{
-        
-        public ApiplateDbContext(DbContextOptions options) : base(options) {
+namespace apiplate.DataBase
+{
+    public class ApiplateDbContext : DbContext
+    {
+
+        public ApiplateDbContext(DbContextOptions options) : base(options)
+        {
 
         }
-         protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
+            foreach (var relationship in builder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
             builder.Entity<Admin>().HasIndex(c => c.Email).IsUnique();
             builder.Entity<Admin>().HasData(GetManagerUser());
             builder.Entity<Role>().HasIndex(c => c.Title).IsUnique();
@@ -26,21 +34,21 @@ namespace apiplate.DataBase{
                 PasswordHash = pHash,
                 PasswordSalt = pSalt,
                 Phone = "249128647019",
-                Email= "almunzir99@gmail.com",
+                Email = "almunzir99@gmail.com",
                 IsManager = true,
                 CreatedAt = System.DateTime.Now,
                 LastUpdate = System.DateTime.Now
 
-                
+
             };
             return admin;
 
         }
-            public DbSet<Admin> Users { get; set; }
-            public DbSet<Message> Messages { get; set; }
-            public DbSet<Role> Roles { get; set; }
-            public DbSet<Permission> Permissions { get; set; }
-            
+        public DbSet<Admin> Users { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
 
 
@@ -48,6 +56,8 @@ namespace apiplate.DataBase{
 
 
 
-            
+
+
+
     }
 }

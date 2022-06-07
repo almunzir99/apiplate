@@ -2,6 +2,7 @@ using System.Text;
 using apiplate.DataBase;
 using apiplate.Domain.Services;
 using apiplate.Hubs;
+using apiplate.Hubs.Connections;
 using apiplate.Services;
 using apiplate.Services.ContentManagement;
 using apiplate.Services.FilesManager;
@@ -50,6 +51,8 @@ namespace apiplate
             services.AddScoped<IRolesService, RolesService>();
             services.AddScoped<IContentManagementService, ContentManagementService>();
             services.AddScoped<IMessagesService, MessageService>();
+            services.AddScoped<IConnectionsManager, ConnectionsManager>();
+            services.AddScoped<INotificationService, NotificationService>();
             services.AddCors(options =>
        {
            options.AddPolicy("CorsPolicy",
@@ -127,6 +130,8 @@ namespace apiplate
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
                 endpoints.MapHub<SignalRHub>("/signalRHub");
+                endpoints.MapHub<NotificationsHub>("/notification-hub");
+
             });
 
             app.UseSpa(spa =>
