@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using apiplate.Domain.Models;
 using apiplate.Resources;
 using apiplate.Resources.Wrappers.Filters;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace apiplate.Domain.Services
@@ -16,6 +17,7 @@ namespace apiplate.Domain.Services
         Task<TResource> SingleAsync(int id);
         Task<TResource> CreateAsync(TResource newItem, int userId);
         Task<TResource> UpdateAsync(int id, TResource newItem);
+        Task<TResource> UpdateAsync(int id, JsonPatchDocument<TModel> newItem);
         Task DeleteAsync(int id);
         Task<FileContentResult> ExportToCSV(); 
         Task<int> GetTotalRecords();

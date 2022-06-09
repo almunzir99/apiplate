@@ -12,6 +12,7 @@ using apiplate.Utils.URI;
 using apiplate.Wrappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace apiplate.Controllers
 {
@@ -148,28 +149,28 @@ where TModel : BaseModel where TResource : BaseResource where TService : IReposi
                 return BadRequest(response);
             }
         }
-        // [HttpPatch("{id}")]
-        // public virtual async Task<IActionResult> PatchAsync(int id, [FromBody] JsonPatchDocument<TModel> body)
-        // {
-        //     if (HttpContext.User.GetClaimValue("type") != "manager")
-        //     {
-        //         var permission = await GetPermission(HttpContext.User.GetClaimValue("admin_role"));
-        //         if (permission.Update == false)
-        //             return StatusCode(403, "Access Denied");
-        //     }
-        //     try
-        //     {
-        //         var result = await _service.UpdateAsync(id, body);
-        //         var response = new Response<TResource>(data: result);
-        //         return Ok(response);
+        [HttpPatch("{id}")]
+        public virtual async Task<IActionResult> PatchAsync(int id, [FromBody] JsonPatchDocument<TModel> body)
+        {
+            if (HttpContext.User.GetClaimValue("type") != "manager")
+            {
+                var permission = await GetPermission(HttpContext.User.GetClaimValue("admin_role"));
+                if (permission.Update == false)
+                    return StatusCode(403, "Access Denied");
+            }
+            try
+            {
+                var result = await _service.UpdateAsync(id, body);
+                var response = new Response<TResource>(data: result);
+                return Ok(response);
 
-        //     }
-        //     catch (System.Exception e)
-        //     {
-        //         var response = new Response<TResource>(success: false, errors: new List<string>() { e.Message });
-        //         return BadRequest(response);
-        //     }
-        // }
+            }
+            catch (System.Exception e)
+            {
+                var response = new Response<TResource>(success: false, errors: new List<string>() { e.Message });
+                return BadRequest(response);
+            }
+        }
         [HttpGet("export/csv")]
         public virtual async Task<IActionResult> ExportToCSV()
         {
