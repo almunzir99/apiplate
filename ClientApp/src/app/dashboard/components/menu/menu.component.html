@@ -22,8 +22,8 @@
         <div class="menu-items">
             <div class="menu-group" *ngFor="let item of menuItems">
                 <div class="title">{{item.title}}</div>
-                <div class="children" *ngFor="let menuItem of item.children; let i = index">
-                    <div [class.sub-menu]="menuItem.open" [class.active]="selectedMenuItem == menuItem" (click)="selectItem(i,item)" class="menu-item">
+                <div  class="children" *ngFor="let menuItem of item.children; let i = index">
+                    <div RippleEffect [class.sub-menu]="menuItem.open" [class.active]="selectedMenuItem == menuItem" (click)="selectItem(i,item)" class="menu-item">
                         <div class="menu-item-info">
                             <div style="display: flex;">
                                 <i [attr.class]="menuItem.icon"></i>
@@ -39,7 +39,7 @@
                             </ng-container>
                         </div>
                         <div class="sub-children">
-                            <div (click)="$event.stopPropagation();selectItem(i,item,childIndex)" *ngFor="let child of menuItem.children;let childIndex = index" [class.active]="selectedMenuItem == child" class="menu-item sub-child">
+                            <div RippleEffect (click)="$event.stopPropagation();selectItem(i,item,childIndex)" *ngFor="let child of menuItem.children;let childIndex = index" [class.active]="selectedMenuItem == child" class="menu-item sub-child">
                                 <i [attr.class]="child.icon"></i>
                                 <div class="item-title">
                                     {{child.title}}

@@ -11,6 +11,7 @@ import { CustomSummernoteEditorComponent } from './custom-summernote-editor/cust
 import { NgxSummernoteModule } from 'ngx-summernote';
 import { PreloaderComponent } from './preloader/preloader.component';
 import { AgmCoreModule } from '@agm/core';
+import { RippleEffectDirective } from './directives/ripple-effect.directive';
 
 
 
@@ -24,6 +25,8 @@ import { AgmCoreModule } from '@agm/core';
     ImageLocalPickerComponent,
     CustomSummernoteEditorComponent, 
     PreloaderComponent,
+    RippleEffectDirective
+
   ],
   imports: [
     CommonModule,
@@ -44,6 +47,8 @@ import { AgmCoreModule } from '@agm/core';
     ImageLocalPickerComponent,
     CustomSummernoteEditorComponent,
     PreloaderComponent,
+    RippleEffectDirective
+
 
 
 
