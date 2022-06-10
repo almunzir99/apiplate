@@ -1,6 +1,6 @@
 using System;
 
-namespace apiplate.Domain.Models.FilesManager
+namespace apiplate.Models.FilesManager
 {
     public class FileModel
     {

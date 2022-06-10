@@ -1,4 +1,4 @@
-namespace apiplate.Domain.Models
+namespace apiplate.Models
 {
     public class Permission : BaseModel{
         public bool Create { get; set; }

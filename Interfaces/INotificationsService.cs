@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using apiplate.Domain.Models;
+using apiplate.Models;
 using apiplate.Resources;
 using apiplate.Resources.Wrappers.Filters;
 
-namespace apiplate.Domain.Services
+namespace apiplate.Interfaces
 {
       public interface INotificationService
     {

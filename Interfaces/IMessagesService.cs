@@ -1,8 +1,8 @@
-using apiplate.Domain.Models;
+using apiplate.Models;
 using apiplate.Resources;
 using apiplate.Resources.Requests;
 
-namespace apiplate.Domain.Services
+namespace apiplate.Interfaces
 {
     public interface IMessagesService : IBaseService<Message,MessageResource,MessageRequestResource>{}
 

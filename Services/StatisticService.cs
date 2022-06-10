@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using apiplate.DataBase;
-using apiplate.Domain.Services;
+using apiplate.Interfaces;
 using apiplate.Resources;
 using Microsoft.EntityFrameworkCore;
 

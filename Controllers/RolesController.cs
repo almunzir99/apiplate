@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using apiplate.Domain.Models;
-using apiplate.Domain.Services;
+using apiplate.Interfaces;
+using apiplate.Models;
 using apiplate.Resources;
 using apiplate.Resources.Requests;
 using apiplate.Utils.URI;

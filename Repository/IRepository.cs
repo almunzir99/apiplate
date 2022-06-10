@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using apiplate.Domain.Models;
+using apiplate.Models;
 using apiplate.Resources;
 using apiplate.Resources.Wrappers.Filters;
 using Microsoft.AspNetCore.JsonPatch;

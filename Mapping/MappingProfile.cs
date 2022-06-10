@@ -1,4 +1,4 @@
-using apiplate.Domain.Models;
+using apiplate.Models;
 using apiplate.Resources;
 using apiplate.Resources.Requests;
 using AutoMapper;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using apiplate.Domain.Models.FilesManager;
+using apiplate.Models.FilesManager;
 using apiplate.Utils.URI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

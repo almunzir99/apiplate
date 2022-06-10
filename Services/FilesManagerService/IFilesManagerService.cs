@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using apiplate.Domain.Models.FilesManager;
+using apiplate.Models.FilesManager;
 using Microsoft.AspNetCore.Http;
 
 namespace apiplate.Services.FilesManager

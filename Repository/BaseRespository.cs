@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using apiplate.DataBase;
-using apiplate.Domain.Models;
+using apiplate.Models;
 using apiplate.Extensions;
 using apiplate.Resources;
 using apiplate.Resources.Wrappers.Filters;

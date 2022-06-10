@@ -4,15 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using apiplate.Domain.Models;
-using apiplate.Domain.Services;
+using apiplate.Models;
+using apiplate.Interfaces;
 using apiplate.Resources;
 using apiplate.Resources.Requests;
 using apiplate.Resources.Wrappers.Filters;
 using apiplate.Utils.URI;
 using apiplate.Wrappers;
 using Microsoft.AspNetCore.Mvc;
-using Studious.Domain.Services;
 
 namespace apiplate.Controllers
 {

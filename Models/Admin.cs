@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace apiplate.Domain.Models
+namespace apiplate.Models
 {
     public class Admin: BasicUserInformation
     {

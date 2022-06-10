@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace apiplate.Domain.Models.FilesManager
+namespace apiplate.Models.FilesManager
 {
     public class DirectoryModel
     {

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using apiplate.Domain.Models;
+using apiplate.Models;
 
 namespace apiplate.Resources
 {

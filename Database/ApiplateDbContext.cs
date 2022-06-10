@@ -1,5 +1,5 @@
 using System.Linq;
-using apiplate.Domain.Models;
+using apiplate.Models;
 using apiplate.Helpers;
 using Microsoft.EntityFrameworkCore;
 

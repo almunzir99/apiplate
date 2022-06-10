@@ -1,6 +1,6 @@
 using System.Linq;
 using apiplate.DataBase;
-using apiplate.Domain.Models;
+using apiplate.Models;
 using apiplate.Resources;
 using apiplate.Resources.Requests;
 using apiplate.Services.FilesManager;
@@ -10,7 +10,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Studious.Domain.Services;
+using apiplate.Interfaces;
 
 namespace apiplate.Services
 {

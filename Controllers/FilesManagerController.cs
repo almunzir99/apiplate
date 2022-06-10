@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using apiplate.Domain.Models.FilesManager;
+using apiplate.Models.FilesManager;
 using apiplate.Services.FilesManager;
 using apiplate.Wrappers;
 using Microsoft.AspNetCore.Http;

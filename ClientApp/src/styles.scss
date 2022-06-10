@@ -179,3 +179,6 @@ code {
 .ui.loader.loader.loader:after{
     color: $primary-color!important;
 }
+.ui.dropdown .menu{
+    z-index: 1002;
+}

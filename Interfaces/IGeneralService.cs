@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace apiplate.Domain.Services
+namespace apiplate.Interfaces
 {
     public interface IGeneralService{
         Task<object> GetCounters();

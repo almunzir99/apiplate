@@ -1,4 +1,4 @@
-namespace apiplate.Domain.Models
+namespace apiplate.Models
 {
     public class Message : BaseModel
     {

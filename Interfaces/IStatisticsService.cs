@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using apiplate.Resources;
 
-namespace apiplate.Domain.Services
+namespace apiplate.Interfaces
 {
     public interface IStatisticsService
     {

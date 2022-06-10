@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace apiplate.Domain.Models
+namespace apiplate.Models
 {
 
     public class BasicUserInformation : BaseModel

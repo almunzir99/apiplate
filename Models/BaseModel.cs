@@ -1,6 +1,6 @@
 using System;
 
-namespace apiplate.Domain.Models
+namespace apiplate.Models
 {
     public abstract class BaseModel{
         public int Id { get; set; }

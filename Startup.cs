@@ -1,6 +1,6 @@
 using System.Text;
 using apiplate.DataBase;
-using apiplate.Domain.Services;
+using apiplate.Interfaces;
 using apiplate.Hubs;
 using apiplate.Hubs.Connections;
 using apiplate.Services;
@@ -20,7 +20,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Studious.Domain.Services;
 
 namespace apiplate
 {

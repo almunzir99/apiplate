@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using apiplate.Domain.Models;
+using apiplate.Models;
 using apiplate.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
-namespace apiplate.Domain.Services
+namespace apiplate.Interfaces
 {
     public interface IBaseUserService<TModel,TResource,TResourceRequest> : IBaseService<TModel,TResource,TResourceRequest>
     where TModel:BasicUserInformation

@@ -1,6 +1,6 @@
 using apiplate.DataBase;
-using apiplate.Domain.Models;
-using apiplate.Domain.Services;
+using apiplate.Models;
+using apiplate.Interfaces;
 using apiplate.Repository;
 using apiplate.Resources;
 using apiplate.Utils.URI;

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using apiplate.Domain.Services;
+using apiplate.Interfaces;
 using apiplate.Resources;
 using apiplate.Wrappers;
 using Microsoft.AspNetCore.Authorization;
