@@ -15,14 +15,13 @@
 .options {
     color: rgba($color: $menu-fr-color, $alpha: 0.7);
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     padding: 15px 10px;
     font-size: 23px;
 }
 
 .options .logo img {
-    height: 40px;
-    width: 40px;
+    height: 60px;
 }
 
 .options i.las {
