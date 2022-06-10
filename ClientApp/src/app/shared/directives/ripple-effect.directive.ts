@@ -13,6 +13,7 @@ export class RippleEffectDirective {
     this.element = elementRef.nativeElement as HTMLElement;
   }
   createRippleOverlay(xoffset: number, yoffset: number) {
+    if(window.getComputedStyle(this.element).position != "relative" && window.getComputedStyle(this.element).position != "absolute")
     this.element.style.position = "relative";
     this.element.style.overflow = "hidden";
     this.rippleOverlay = document.createElement("div");
@@ -21,13 +22,12 @@ export class RippleEffectDirective {
     this.rippleOverlay.style.borderRadius = `50%`;
     this.rippleOverlay.style.backgroundColor = "#ffffff35";
     this.rippleOverlay.style.position = "absolute";
-    this.rippleOverlay.style.zIndex = "10000";
+    this.rippleOverlay.style.zIndex = "999";
     this.rippleOverlay.style.top = `${yoffset}px`;
     this.rippleOverlay.style.left = `${xoffset}px`;
     this.element.appendChild(this.rippleOverlay);
   }
   @HostListener("click", ['$event']) onClick($event) {
-    
     if (this.reserved == true)
       return;
     this.reserved = true; 

@@ -53,6 +53,8 @@ namespace apiplate
             services.AddScoped<IMessagesService, MessageService>();
             services.AddScoped<IConnectionsManager, ConnectionsManager>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IStatisticsService, StatisticsService>();
+
             services.AddCors(options =>
        {
            options.AddPolicy("CorsPolicy",
