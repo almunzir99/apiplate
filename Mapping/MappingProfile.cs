@@ -1,5 +1,6 @@
 using apiplate.Domain.Models;
 using apiplate.Resources;
+using apiplate.Resources.Requests;
 using AutoMapper;
 
 namespace apiplate.Mapping
@@ -8,24 +9,19 @@ namespace apiplate.Mapping
     {
         public MappingProfile()
         {
-            this.CreateMap<RoleResource, Role>();
-            this.CreateMap<PermissionResource, Permission>();
-            this.CreateMap<AdminResource, Admin>();
-            this.CreateMap<MessageResource, Message>();
-            this.CreateMap<AdminResource, Admin>();
-            this.CreateMap<NotificationResource, Notification>();
+            CreateMap<RoleResource, Role>().ReverseMap();
+            CreateMap<RoleRequestResource, Role>().ReverseMap();
+            CreateMap<PermissionResource, Permission>().ReverseMap();
+            CreateMap<AdminResource, Admin>().ReverseMap();
+            CreateMap<AdminRequestResource, Admin>().ReverseMap();
+            CreateMap<MessageResource, Message>().ReverseMap();
+            CreateMap<MessageRequestResource, Message>().ReverseMap();
+            CreateMap<AdminResource, Admin>().ReverseMap();
+            CreateMap<NotificationResource, Notification>().ReverseMap();
+            
 
         }
-        public void CreateMap<TResource, TModel>(string IgnoreItem = null)
-         where TResource : BaseResource where TModel : BaseModel
-        {
-            base.CreateMap<TResource, TModel>()
-            .ForMember(c => c.Id, opt => opt.Condition(c => c.Id
-             != null))
-            .ForMember(c => c.CreatedAt, opt => opt.Condition(c => c.CreatedAt != default))
-            .ReverseMap();
-
-        }
+         
     }
 
 }

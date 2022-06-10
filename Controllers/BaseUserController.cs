@@ -15,14 +15,16 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Http;
 using apiplate.Resources.Extras;
 using System.ComponentModel.DataAnnotations;
+using apiplate.Resources.Requests;
 
 namespace apiplate.Controllers
 {
-    public abstract class BaseUserController<TModel, TResource, TService>
-    : BaseController<TModel, TResource, TService>
+    public abstract class BaseUserController<TModel, TResource, TRequest ,TService>
+    : BaseController<TModel, TResource,TRequest ,TService>
     where TModel : BasicUserInformation
     where TResource : BasicUserInformationResource
-    where TService : IBaseUserService<TModel, TResource>
+    where TService : IBaseUserService<TModel, TResource,TRequest>
+    where TRequest : UserRequestResource
     {
         // private readonly INotificationService _notificationService;
         private readonly IUriService _uriService;
@@ -52,7 +54,7 @@ namespace apiplate.Controllers
         }
 
         [HttpPost("Register")]
-        public virtual async Task<IActionResult> Register(TResource body)
+        public virtual async Task<IActionResult> Register(TRequest body)
         {
             try
             {

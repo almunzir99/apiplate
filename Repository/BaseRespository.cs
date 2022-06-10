@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using apiplate.DataBase;
 using apiplate.Domain.Models;
-using apiplate.Domain.Services;
 using apiplate.Extensions;
 using apiplate.Resources;
 using apiplate.Resources.Wrappers.Filters;
@@ -16,9 +15,10 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace apiplate.Services
+namespace apiplate.Repository
 {
-    public class BaseRepository<TModel, TResource> : IRepository<TModel, TResource> where TModel : BaseModel where TResource : BaseResource
+    public class BaseRepository<TModel, TResource,TRequest> : IRepository<TModel, TResource,TRequest>
+     where TModel : BaseModel where TResource : BaseResource
     {
         protected readonly ApiplateDbContext _context;
         protected readonly IMapper _mapper;
@@ -33,11 +33,11 @@ namespace apiplate.Services
             _dbSet = _context.Set<TModel>();
         }
 
-        public virtual async Task<TResource> CreateAsync(TResource item, int userId)
+        public virtual async Task<TResource> CreateAsync(TRequest item, int userId)
         {
             try
             {
-                var mappedItem = _mapper.Map<TResource, TModel>(item);
+                var mappedItem = _mapper.Map<TRequest, TModel>(item);
                 mappedItem.CreatedAt = DateTime.Now;
                 mappedItem.LastUpdate = DateTime.Now;
                 await _dbSet.AddAsync(mappedItem);
@@ -150,12 +150,12 @@ namespace apiplate.Services
             return mappedResult;
         }
 
-        public virtual async Task<TResource> UpdateAsync(int id, TResource newItem)
+        public virtual async Task<TResource> UpdateAsync(int id, TRequest newItem)
         {
             var result = await _dbSet.SingleOrDefaultAsync(c => c.Id == id);
             if (result == null)
                 throw new Exception("item is not found");
-            _mapper.Map<TResource, TModel>(newItem, result);
+            _mapper.Map<TRequest, TModel>(newItem, result);
             result.LastUpdate = DateTime.Now;
             var save = await _context.SaveChangesAsync();
             if (save == -1)

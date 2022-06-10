@@ -2,6 +2,7 @@ using apiplate.DataBase;
 using apiplate.Domain.Models;
 using apiplate.Domain.Services;
 using apiplate.Resources;
+using apiplate.Resources.Requests;
 using apiplate.Utils.URI;
 using AutoMapper;
 using System;
@@ -10,7 +11,7 @@ using System.Linq;
 
 namespace apiplate.Services
 {
-    public class MessageService : BaseRepository<Message, MessageResource>, IMessagesService
+    public class MessageService : BaseService<Message, MessageResource,MessageRequestResource>, IMessagesService
     {
         public MessageService(IMapper mapper, ApiplateDbContext context, IUriService uriSerivce) : base(mapper, context, uriSerivce)
         {

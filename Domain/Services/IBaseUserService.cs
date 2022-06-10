@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 namespace apiplate.Domain.Services
 {
-    public interface IBaseUserService<TModel,TResource> : IRepository<TModel,TResource>
+    public interface IBaseUserService<TModel,TResource,TResourceRequest> : IBaseService<TModel,TResource,TResourceRequest>
     where TModel:BasicUserInformation
     where TResource:BasicUserInformationResource
     {
         Task<TResource> Authenticate(AuthenticationModel model);
-        Task<TResource> Register(TResource user);
+        Task<TResource> Register(TResourceRequest user);
         Task PasswordRecoveryRequest(string email);
         Task PasswordRecovery(string key,string newPassword);
         

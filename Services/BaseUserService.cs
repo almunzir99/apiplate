@@ -19,14 +19,16 @@ using System.IO;
 using apiplate.Utils.SMTP.Services;
 using Microsoft.Extensions.Configuration;
 using apiplate.Utils.URI;
+using apiplate.Resources.Requests;
 
 namespace apiplate.Services
 {
-    public abstract class BaseUserService<TModel, TResource> :
-     BaseRepository<TModel, TResource>,
-     IBaseUserService<TModel, TResource>
+    public abstract class BaseUserService<TModel, TResource,TRequest> :
+     BaseService<TModel, TResource,TRequest>,
+     IBaseUserService<TModel, TResource,TRequest>
      where TModel : BasicUserInformation
      where TResource : BasicUserInformationResource
+     where TRequest : UserRequestResource
 
 
     {
@@ -69,11 +71,11 @@ namespace apiplate.Services
             mappedUser.Notifications = mappedUser.Notifications.OrderByDescending(c => c.LastUpdate).ToList();
             return mappedUser;
         }
-        public virtual async Task<TResource> Register(TResource user)
+        public virtual async Task<TResource> Register(TRequest user)
         {
             try
             {
-                var mappedUser = _mapper.Map<TResource, TModel>(user);
+                var mappedUser = _mapper.Map<TRequest, TModel>(user);
                 mappedUser.CreatedAt = DateTime.Now;
                 mappedUser.LastUpdate = DateTime.Now;
                 byte[] pHash, pSalt;
@@ -99,14 +101,14 @@ namespace apiplate.Services
 
             }
         }
-        public override async Task<TResource> UpdateAsync(int id, TResource item)
+        public override async Task<TResource> UpdateAsync(int id, TRequest item)
         {
             try
             {
                 var result = await _dbSet.SingleOrDefaultAsync(c => c.Id == id);
                 if (result == null)
                     throw new Exception("item is not found");
-                _mapper.Map<TResource, TModel>(item, result);
+                _mapper.Map<TRequest, TModel>(item, result);
                 result.LastUpdate = DateTime.Now;
                 byte[] pHash, pSalt;
                 HashingHelper.CreateHashPassword(item.Password, out pHash, out pSalt);

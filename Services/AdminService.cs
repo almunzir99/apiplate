@@ -2,6 +2,7 @@ using System.Linq;
 using apiplate.DataBase;
 using apiplate.Domain.Models;
 using apiplate.Resources;
+using apiplate.Resources.Requests;
 using apiplate.Services.FilesManager;
 using apiplate.Utils.SMTP.Services;
 using apiplate.Utils.URI;
@@ -13,7 +14,7 @@ using Studious.Domain.Services;
 
 namespace apiplate.Services
 {
-    public class AdminService : BaseUserService<Admin, AdminResource>, IAdminService
+    public class AdminService : BaseUserService<Admin, AdminResource,AdminRequestResource>, IAdminService
     {
         public AdminService(IMapper mapper, ApiplateDbContext context, IConfiguration config, ISMTPService smtpSerivce, IWebHostEnvironment webhostEnvironment, IFilesManagerService filesManagerService,IUriService uriService) : base(mapper, context,smtpSerivce ,config,webhostEnvironment, filesManagerService,uriService)
         {

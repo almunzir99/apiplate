@@ -19,8 +19,8 @@ namespace apiplate.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public abstract class BaseController<TModel, TResource, TService> : ControllerBase, IBaseController<TModel, TResource, TService>
-where TModel : BaseModel where TResource : BaseResource where TService : IRepository<TModel, TResource>
+    public abstract class BaseController<TModel, TResource, TRequest ,TService> : ControllerBase, IBaseController<TModel, TResource, TRequest ,TService>
+where TModel : BaseModel where TResource : BaseResource where TService : IBaseService<TModel, TResource,TRequest>
     {
         protected readonly TService _service;
         protected readonly IUriService _uriSerivce;
@@ -32,7 +32,7 @@ where TModel : BaseModel where TResource : BaseResource where TService : IReposi
 
         }
         [HttpPost]
-        public virtual async Task<IActionResult> PostAsync([FromBody] TResource body)
+        public virtual async Task<IActionResult> PostAsync([FromBody] TRequest body)
         {
             if (!IsAnonymous("PostAsync") && HttpContext.User.GetClaimValue("type") != "manager")
             {
@@ -125,7 +125,7 @@ where TModel : BaseModel where TResource : BaseResource where TService : IReposi
             }
         }
         [HttpPut("{id}")]
-        public virtual async Task<IActionResult> PutAsync(int id, [FromBody] TResource body)
+        public virtual async Task<IActionResult> PutAsync(int id, [FromBody] TRequest body)
         {
             if (!IsAnonymous("PutAsync") && HttpContext.User.GetClaimValue("type") != "manager")
             {

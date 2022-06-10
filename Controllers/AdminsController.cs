@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using apiplate.Domain.Models;
 using apiplate.Domain.Services;
 using apiplate.Resources;
+using apiplate.Resources.Requests;
 using apiplate.Resources.Wrappers.Filters;
 using apiplate.Utils.URI;
 using apiplate.Wrappers;
@@ -15,7 +16,7 @@ using Studious.Domain.Services;
 
 namespace apiplate.Controllers
 {
-    public class AdminsController : BaseUserController<Admin, AdminResource, IAdminService>
+    public class AdminsController : BaseUserController<Admin, AdminResource, AdminRequestResource ,IAdminService>
     {
         private readonly IRolesService _roleService;
         public AdminsController(IAdminService service, IUriService uriService, IRolesService roleService,INotificationService _notificationsService) : base(service, uriService, _notificationsService)
