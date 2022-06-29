@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { FuiModalService } from 'ngx-fomantic-ui';
+import { Subscription } from 'rxjs';
 import { User } from 'src/app/core/models/user.model';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { UsersService } from 'src/app/core/services/users.service';
@@ -17,6 +18,7 @@ export class ChangePasswordComponent implements OnInit {
 
   formGroups: FormBuilderGroup[];
   loading = false;
+  subscription = new Subscription();
   constructor(private userService: UsersService, private modalService: FuiModalService) {
   }
   initFormGroups() {
@@ -67,7 +69,7 @@ export class ChangePasswordComponent implements OnInit {
   submit(event) { 
      console.log(event);
     this.loading = true;
-    this.userService.changePassword(event.oldPassword,event.newPassword).subscribe(res => {
+    var sub = this.userService.changePassword(event.oldPassword,event.newPassword).subscribe(res => {
       this.modalService.open(new MessageModal({
         title: "Success",
         content: "Password Changed Successfully, please logout to save changes", isConfirm: false, messageType: MessageTypes.Success
@@ -78,10 +80,14 @@ export class ChangePasswordComponent implements OnInit {
       this.loading = false;
 
     });
+    this.subscription.add(sub);
   }
   ngOnInit(): void {
     this.initFormGroups();
 
+  }
+  ngOnDestroy (){
+    this.subscription.unsubscribe();
   }
 
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { FuiModalService } from 'ngx-fomantic-ui';
+import { Subscription } from 'rxjs';
 import { User } from 'src/app/core/models/user.model';
 import { RolesService } from 'src/app/core/services/roles.service';
 import { UsersService } from 'src/app/core/services/users.service';
@@ -9,7 +10,7 @@ import { ControlTypes } from 'src/app/shared/form-builder/models/control-type.en
 import { FormBuilderGroup } from 'src/app/shared/form-builder/models/form-builder-group.model';
 import { FormBuilderModal } from 'src/app/shared/modals/form-builder-modal/form-builder-modal.component';
 import { MessageModal, MessageTypes } from 'src/app/shared/modals/message-modal/message-modal.component';
- 
+
 
 @Component({
   selector: 'app-users',
@@ -29,31 +30,32 @@ export class UsersComponent implements OnInit {
   ascending = false;
   searchValue = "";
   showActivities = false;
-  targetUserForActivities:User;
+  targetUserForActivities: User;
+  subscription = new Subscription();
   constructor(private _service: UsersService, private _roleService: RolesService, private modalService: FuiModalService) {
-   
+
   }
-  onSearchChange(value){
+  onSearchChange(value) {
     this.searchValue = value;
     this.initData();
   }
-  onSortChange(event){
+  onSortChange(event) {
     this.orderBy = event.orderBy;
     this.ascending = event.ascending;
     this.initData();
 
   }
-  onActivityClick(user:User){
+  onActivityClick(user: User) {
     this.targetUserForActivities = user;
     console.log(this.targetUserForActivities);
     this.showActivities = true;
   }
-  activityModalDismissed(){
+  activityModalDismissed() {
     this.showActivities = false;
   }
   initData() {
     this.isDataLoading = true;
-    this._service.get(this.pageIndex, this.pageSize,this.searchValue,this.orderBy,this.ascending).subscribe(res => {
+    var sub = this._service.get(this.pageIndex, this.pageSize, this.searchValue, this.orderBy, this.ascending).subscribe(res => {
       this.users = res.data;
       this.totalRecords = res.totalRecords;
       this.totalPages = res.totalPages;
@@ -63,73 +65,74 @@ export class UsersComponent implements OnInit {
       this.isDataLoading = false;
 
     });
+    this.subscription.add(sub);
   }
   initCols() {
     this.cols = [
       {
         prop: "image",
         title: "Image",
-        show:true,
+        show: true,
 
 
       },
       {
         prop: "id",
         title: "Id",
-        show:true,
-        sortable:true
+        show: true,
+        sortable: true
 
       },
-     
+
       {
         prop: "username",
         title: "Username",
-        show:true,
-        sortable:true
+        show: true,
+        sortable: true
 
       },
       {
         prop: "phone",
         title: "Phone Number",
-        show:true,
-        sortable:true
+        show: true,
+        sortable: true
 
 
       },
       {
         prop: "email",
         title: "email",
-        show:true,
-        sortable:true
+        show: true,
+        sortable: true
 
 
       },
       {
         prop: "role",
         title: "role",
-        show:true,
+        show: true,
 
 
       },
       {
         prop: "createdAt",
         title: "Created At",
-        show:true,
-        sortable:true
+        show: true,
+        sortable: true
 
 
       },
       {
         prop: "lastUpdate",
         title: "Last Update",
-        show:true,
-        sortable:true
+        show: true,
+        sortable: true
 
 
       }, {
         prop: "Actions",
         title: "Actions",
-        show:true,
+        show: true,
 
       }
     ]
@@ -148,33 +151,35 @@ export class UsersComponent implements OnInit {
     this.initData();
 
   }
-  delete(id:number) {
+  delete(id: number) {
     this.modalService
       .open(new MessageModal({
         title: "Confirm Message",
-        content: "are you sure you want to delete this item ?", isConfirm: true , messageType:MessageTypes.Danger
+        content: "are you sure you want to delete this item ?", isConfirm: true, messageType: MessageTypes.Danger
       }))
       .onApprove(() => {
-          this.DimLoading = true;
-          this._service.delete(id).subscribe(res =>{
-              this.DimLoading = false;
-              this.modalService.open(new MessageModal({
-                title: "Success",
-                content: "Item Deleted Successfully", isConfirm: false , messageType:MessageTypes.Success
-              }))
-              this.initData();
-          },err =>{
-            this.DimLoading = false;
+        this.DimLoading = true;
+        var sub = this._service.delete(id).subscribe(res => {
+          this.DimLoading = false;
+          this.modalService.open(new MessageModal({
+            title: "Success",
+            content: "Item Deleted Successfully", isConfirm: false, messageType: MessageTypes.Success
+          }))
+          this.initData();
+        }, err => {
+          this.DimLoading = false;
 
-          });
+        });
+        this.subscription.add(sub);
+
       })
-      
+
   }
-  openFormModal(user:User) {
+  openFormModal(user: User) {
     console.log(user);
     var roles;
     this.DimLoading = true;
-    this._roleService.get().subscribe(res => {
+   var sub = this._roleService.get().subscribe(res => {
       roles = res.data;
       this.DimLoading = false;
       const form: FormBuilderGroup[] = [
@@ -209,7 +214,7 @@ export class UsersComponent implements OnInit {
               controlType: ControlTypes.NumberInput,
               width: "50%",
               value: user ? user.phone : undefined,
-              validators:[
+              validators: [
                 Validators.required,
                 Validators.minLength(10),
                 Validators.maxLength(12),
@@ -224,7 +229,7 @@ export class UsersComponent implements OnInit {
               controlType: ControlTypes.TextInput,
               width: "100%",
               value: user ? user.email : undefined,
-              validators:[
+              validators: [
                 Validators.required
 
               ]
@@ -237,7 +242,7 @@ export class UsersComponent implements OnInit {
 
               controlType: ControlTypes.PasswordInput,
               width: "50%",
-              validators:[
+              validators: [
                 Validators.required
               ]
 
@@ -246,7 +251,7 @@ export class UsersComponent implements OnInit {
               title: "re-enter the password",
               name: "repassword",
               icon: "key icon",
-              validators:[
+              validators: [
                 Validators.required
               ],
 
@@ -258,9 +263,9 @@ export class UsersComponent implements OnInit {
               name: "roleId",
               controlType: ControlTypes.Selection,
               data: roles,
-              isObjectData:true,
-              labelProp:"title",
-              valueProp:"id",
+              isObjectData: true,
+              labelProp: "title",
+              valueProp: "id",
               width: "100%",
               value: user ? user.roleId : undefined,
 
@@ -273,8 +278,8 @@ export class UsersComponent implements OnInit {
               value: user ? user.image : undefined,
 
             },
-            
-            
+
+
           ]
         }
       ];
@@ -284,48 +289,54 @@ export class UsersComponent implements OnInit {
           controlGroups: form
         }
       )).onApprove((result) => {
-        if(user)
-        this.update(result as User); 
-        else 
-        this.create(result as User); 
-      
+        if (user)
+          this.update(result as User);
+        else
+          this.create(result as User);
+
       });
     }, err => {
       this.DimLoading = false;
       return;
     });
+    this.subscription.add(sub);
+
   }
-  create(user:User){
+  create(user: User) {
     this.DimLoading = true;
-    this._service.post(user).subscribe(res =>{
+    var sub = this._service.post(user).subscribe(res => {
       this.initData();
       this.DimLoading = false;
       this.modalService.open(new MessageModal({
         title: "Success",
-        content: "Item Created Successfully", isConfirm: false , messageType:MessageTypes.Success
+        content: "Item Created Successfully", isConfirm: false, messageType: MessageTypes.Success
       }))
-    },err=>{
+    }, err => {
       console.log(err);
       this.DimLoading = false;
-       
+
     })
+    this.subscription.add(sub);
+
   }
-  update(user:User){
+  update(user: User) {
     this.DimLoading = true;
-    this._service.put(user).subscribe(res =>{
+   var sub = this._service.put(user).subscribe(res => {
       this.initData();
       this.DimLoading = false;
       this.modalService.open(new MessageModal({
         title: "Success",
-        content: "Item Updated Successfully", isConfirm: false , messageType:MessageTypes.Success
+        content: "Item Updated Successfully", isConfirm: false, messageType: MessageTypes.Success
       }))
-    },err=>{
+    }, err => {
       console.log(err);
       this.DimLoading = false;
-       
+
     })
+    this.subscription.add(sub);
+
   }
-  
+
   range(total: number, beginIndex: number = 0, step: number = 1): number[] {
     let list: number[] = [];
     for (let index = beginIndex; index < total; index += step) {
@@ -333,8 +344,10 @@ export class UsersComponent implements OnInit {
     }
     return list;
   }
-  downloadCSV(){
+  downloadCSV() {
     this._service.downloadCSV();
   }
-
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 }

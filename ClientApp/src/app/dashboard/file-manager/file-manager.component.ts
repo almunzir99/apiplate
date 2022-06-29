@@ -1,13 +1,14 @@
 import { HttpEventType } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FuiModalService, ModalSize } from 'ngx-fomantic-ui';
+import { Subscription } from 'rxjs';
 import { DirectoryModel } from 'src/app/core/models/directory.model';
 import { FileModel } from 'src/app/core/models/File.Model';
 import { FilesManagerService } from 'src/app/core/services/files-manager.service';
 import { ControlTypes } from 'src/app/shared/form-builder/models/control-type.enum';
 import { FormBuilderModal } from 'src/app/shared/modals/form-builder-modal/form-builder-modal.component';
 import { MessageModal, MessageTypes } from 'src/app/shared/modals/message-modal/message-modal.component';
- 
+
 import { FileManagerModal } from './file-manager-modal/file-manager-modal.component';
 
 export enum PickingMode {
@@ -35,12 +36,13 @@ export class FileManagerComponent implements OnInit {
   progress = 0;
   selectedFiles: FileModel[] = [];
   PickMode = PickingMode;
+  subscription: Subscription = new Subscription();
   constructor(private _service: FilesManagerService, private modalService: FuiModalService) {
   }
   initData() {
     this.isLoading = true;
     var path = this.currentPath;
-    this._service.getDirectory(path).subscribe(res => {
+    var sub = this._service.getDirectory(path).subscribe(res => {
       if (this.navigationStack.length == 0) {
         this.navigationStack.push(res.data);
         this.CurrentDirectory = this.navigationStack[this.navigationStack.length - 1];
@@ -55,7 +57,8 @@ export class FileManagerComponent implements OnInit {
       this.isLoading = true;
       console.log(err);
       this.isLoading = false;
-    })
+    });
+    this.subscription.add(sub);
   }
   onSelectClick() {
     if (this.pickingMode == PickingMode.Files)
@@ -85,7 +88,7 @@ export class FileManagerComponent implements OnInit {
       if (result == "") result = "/";
       if (this.currentPath == "") path = "/";
 
-      this._service.moveDirectory(dir.title, this.currentPath, result).subscribe(res => {
+      var sub = this._service.moveDirectory(dir.title, this.currentPath, result).subscribe(res => {
         this.DimLoading = false;
         this.initData();
         this.modalService.open(new MessageModal({ title: "success", content: "item moved successfully", messageType: MessageTypes.Success, isConfirm: false }));
@@ -97,6 +100,7 @@ export class FileManagerComponent implements OnInit {
           content: "Operation Failed", isConfirm: false, messageType: MessageTypes.Danger
         }));
       });
+      this.subscription.add(sub);
     });
   }
   moveFile(file: FileModel) {
@@ -107,7 +111,7 @@ export class FileManagerComponent implements OnInit {
       if (result == "") result = "/";
       if (this.currentPath == "") path = "/";
 
-      this._service.moveFile(file.title, path, result).subscribe(res => {
+      var sub = this._service.moveFile(file.title, path, result).subscribe(res => {
         this.DimLoading = false;
         this.initData();
         this.modalService.open(new MessageModal({ title: "success", content: "item moved successfully", messageType: MessageTypes.Success, isConfirm: false }));
@@ -118,6 +122,7 @@ export class FileManagerComponent implements OnInit {
           title: "Error",
           content: "Operation Failed", isConfirm: false, messageType: MessageTypes.Danger
         }));
+        this.subscription.add(sub);
       });
     });
   }
@@ -136,7 +141,7 @@ export class FileManagerComponent implements OnInit {
     })).onApprove(() => {
       this.DimLoading = true;
       let path = this.currentPath.replace(`${dir.title}/`, "");
-      this._service.deleteDirectory(dir.title, path).subscribe(res => {
+      var sub = this._service.deleteDirectory(dir.title, path).subscribe(res => {
         this.DimLoading = false;
         this.initData();
         this.modalService.open(new MessageModal({
@@ -150,6 +155,7 @@ export class FileManagerComponent implements OnInit {
           title: "Error",
           content: "Operation Failed", isConfirm: false, messageType: MessageTypes.Danger
         }));
+        this.subscription.add(sub);
       });
 
     })
@@ -179,7 +185,7 @@ export class FileManagerComponent implements OnInit {
       isConfirm: true, messageType: MessageTypes.Warning
     })).onApprove(() => {
       this.DimLoading = true;
-      this._service.deleteFile(file.title, this.currentPath).subscribe(res => {
+      var sub = this._service.deleteFile(file.title, this.currentPath).subscribe(res => {
         this.DimLoading = false;
         this.initData();
         this.modalService.open(new MessageModal({
@@ -193,6 +199,8 @@ export class FileManagerComponent implements OnInit {
           title: "Error",
           content: "Operation Failed", isConfirm: false, messageType: MessageTypes.Danger
         }));
+        this.subscription.add(sub);
+
       });
 
     })
@@ -213,13 +221,15 @@ export class FileManagerComponent implements OnInit {
       ]
     }, ModalSize.Mini)).onApprove(result => {
       this.DimLoading = true;
-      this._service.renameDirectory(this.currentPath, dir.title, result['title']).subscribe(res => {
+      var sub = this._service.renameDirectory(this.currentPath, dir.title, result['title']).subscribe(res => {
         this.DimLoading = false;
         this.initData();
       }, err => {
         this.DimLoading = false;
         console.log(err);
       });
+      this.subscription.add(sub);
+
     });
   }
   renameFile(file: FileModel) {
@@ -238,18 +248,20 @@ export class FileManagerComponent implements OnInit {
       ]
     }, ModalSize.Mini)).onApprove(result => {
       this.DimLoading = true;
-      this._service.renameFile(this.currentPath, file.title, result['title']).subscribe(res => {
+      var sub = this._service.renameFile(this.currentPath, file.title, result['title']).subscribe(res => {
         this.DimLoading = false;
         this.initData();
       }, err => {
         this.DimLoading = false;
         console.log(err);
       });
+      this.subscription.add(sub);
+
     });
   }
   uploadFile(files: File[]) {
     this.DimUploading = true;
-    this._service.uploadFile(files, this.currentPath).subscribe(events => {
+    var sub = this._service.uploadFile(files, this.currentPath).subscribe(events => {
       if (events.type === HttpEventType.UploadProgress) {
         this.progress = Math.round(100 * events.loaded / events.total);
       }
@@ -262,6 +274,8 @@ export class FileManagerComponent implements OnInit {
       this.DimUploading = false;
 
     })
+    this.subscription.add(sub);
+
   }
   navigate(directory: DirectoryModel) {
     this.navigationStack.push(directory);
@@ -296,22 +310,24 @@ export class FileManagerComponent implements OnInit {
       ]
     }, ModalSize.Mini)).onApprove(result => {
       this.DimLoading = true;
-      this._service.postDirectory(result['title'], this.currentPath).subscribe(res => {
+      var sub = this._service.postDirectory(result['title'], this.currentPath).subscribe(res => {
         this.DimLoading = false;
         this.initData();
       }, err => {
         this.DimLoading = false;
         console.log(err);
       });
+      this.subscription.add(sub);
+
     });
   }
-  ngAfterViewInit(){
-    console.log("view initied");
+  ngAfterViewInit() {
   }
   ngOnInit(): void {
-    console.log("initializing");
     this.initData();
-
+  }
+  ngOnDestroy (){
+    this.subscription.unsubscribe();
   }
 
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { FuiModalService } from 'ngx-fomantic-ui';
+import { Subscription } from 'rxjs';
 import { User } from 'src/app/core/models/user.model';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { UsersService } from 'src/app/core/services/users.service';
@@ -18,6 +19,7 @@ export class ProfileComponent implements OnInit {
   currentUser: User;
   formGroups: FormBuilderGroup[];
   loading = false;
+  subscription = new Subscription();
   constructor(private authService: AuthService, private userService: UsersService, private modalService: FuiModalService) {
     this.getCurrentUser();
   }
@@ -101,7 +103,7 @@ export class ProfileComponent implements OnInit {
 
 
     this.loading = true;
-    this.userService.put(this.currentUser).subscribe(res => {
+   var sub = this.userService.put(this.currentUser).subscribe(res => {
       this.modalService.open(new MessageModal({
         title: "Success",
         content: "Item Updated Successfully, please logout to save changes", isConfirm: false, messageType: MessageTypes.Success
@@ -112,6 +114,7 @@ export class ProfileComponent implements OnInit {
       this.loading = false;
 
     });
+    this.subscription.add(sub);
   }
   getCurrentUser() {
     this.authService.$currentUser.subscribe(res => {
@@ -122,5 +125,7 @@ export class ProfileComponent implements OnInit {
   }
   ngOnInit(): void {
   }
-
+  ngOnDestroy (){
+    this.subscription.unsubscribe();
+  }
 }

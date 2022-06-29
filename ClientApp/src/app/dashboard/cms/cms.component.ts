@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FuiModalService, ModalSize } from 'ngx-fomantic-ui';
+import { Subscription } from 'rxjs';
 import { langs } from 'src/app/shared/extras/languages';
 import { ControlTypes } from 'src/app/shared/form-builder/models/control-type.enum';
 import { FormBuilderModal } from 'src/app/shared/modals/form-builder-modal/form-builder-modal.component';
@@ -24,19 +25,21 @@ export class CmsComponent implements OnInit {
   isLoading = false;
   currentNodeValue: string;
   editingMode = 1;
+  subscription: Subscription = new Subscription();
+
   constructor(private _service: CmsService, private modalService: FuiModalService) {
     this.getsLangs();
   }
 
-  getsLangs(){
+  getsLangs() {
     this.isLoading = true;
-    this._service.getLangs().subscribe(res =>{
+    var sub = this._service.getLangs().subscribe(res => {
       this.isLoading = false;
       this.langs = res as any[];
       this.currentLang = this.langs[0];
-    this.getObj();
+      this.getObj();
 
-    },err =>{
+    }, err => {
       console.log(err);
       this.isLoading = false;
 
@@ -45,36 +48,38 @@ export class CmsComponent implements OnInit {
         content: "Operation Failed, please try again", isConfirm: false, messageType: MessageTypes.Danger
       }))
     })
+    this.subscription.add(sub);
+
   }
-  createLang(){
+  createLang() {
     let codes = langs.map(e => e.code);
     this.modalService.open(new FormBuilderModal({
-      title:"Create language",
-      controlGroups:[
+      title: "Create language",
+      controlGroups: [
         {
-          title:null,
-          controls:[
+          title: null,
+          controls: [
             {
-              title:"languages codes",
-              name:"code",
-              controlType:ControlTypes.Selection,
+              title: "languages codes",
+              name: "code",
+              controlType: ControlTypes.Selection,
               data: codes,
-              width:"100%"
+              width: "100%"
             }
           ]
         }
       ]
-    },ModalSize.Mini)).onApprove(result =>{
+    }, ModalSize.Mini)).onApprove(result => {
       this.DimLoading = true;
-      this._service.createLang(result['code']).subscribe(res =>{
-       
+      var sub = this._service.createLang(result['code']).subscribe(res => {
+
         this.modalService.open(new MessageModal({
           title: "Success",
           content: "language Created Successfully", isConfirm: false, messageType: MessageTypes.Success
         }))
         this.DimLoading = false;
         this.getsLangs();
-      },err =>{
+      }, err => {
         this.modalService.open(new MessageModal({
           title: "Error",
           content: "Operation Failed, please try again", isConfirm: false, messageType: MessageTypes.Danger
@@ -82,11 +87,13 @@ export class CmsComponent implements OnInit {
         this.DimLoading = false;
 
       })
+      this.subscription.add(sub);
+
     })
   }
   getObj() {
     this.isLoading = true;
-    this._service.getJsonObject(this.currentLang).subscribe(res => {
+    var sub = this._service.getJsonObject(this.currentLang).subscribe(res => {
       this.currentJson = res;
       this.isLoading = false;
 
@@ -97,7 +104,10 @@ export class CmsComponent implements OnInit {
         title: "Error",
         content: "Operation Failed, please try again", isConfirm: false, messageType: MessageTypes.Danger
       }))
+
     });
+    this.subscription.add(sub);
+
   }
   getKeys(obj) {
     if (obj != null)
@@ -125,30 +135,32 @@ export class CmsComponent implements OnInit {
     console.log(content);
     this.currentNodeValue = content;
   }
-  changeLang(value){
-      var index = this.langs.indexOf(value);
-      this.currentLang = this.langs[index];
-      this.getObj();
+  changeLang(value) {
+    var index = this.langs.indexOf(value);
+    this.currentLang = this.langs[index];
+    this.getObj();
   }
   onApply() {
     this.DimLoading = true;
-    (
+    var sub = (
       this.editingMode == 0 ?
-      this._service.CreateNode(this.currentNode.parent, this.currentNodeValue, this.currentNode.key,this.currentLang) :
-      this._service.editNode(this.currentNode.parent, this.currentNodeValue, this.currentNode.key,this.currentLang)).subscribe(res => {
-      this.getObj();
-      this.currentNode.value = this.currentNodeValue;
-      this.DimLoading = false;
-      this.editingMode = 1;
-    }, err => {
-      this.DimLoading = false;
-      this.editingMode = 1;
-      this.modalService.open(new MessageModal({
-        title: "Error",
-        content: "Operation Failed, please try again", isConfirm: false, messageType: MessageTypes.Danger
-      }))
+        this._service.CreateNode(this.currentNode.parent, this.currentNodeValue, this.currentNode.key, this.currentLang) :
+        this._service.editNode(this.currentNode.parent, this.currentNodeValue, this.currentNode.key, this.currentLang)).subscribe(res => {
+          this.getObj();
+          this.currentNode.value = this.currentNodeValue;
+          this.DimLoading = false;
+          this.editingMode = 1;
+        }, err => {
+          this.DimLoading = false;
+          this.editingMode = 1;
+          this.modalService.open(new MessageModal({
+            title: "Error",
+            content: "Operation Failed, please try again", isConfirm: false, messageType: MessageTypes.Danger
+          }))
 
-    })
+        })
+    this.subscription.add(sub);
+
   }
   CreateParent() {
     this.modalService.open(new FormBuilderModal({
@@ -166,7 +178,7 @@ export class CmsComponent implements OnInit {
       ]
     }, ModalSize.Mini)).onApprove(result => {
       this.DimLoading = true;
-      this._service.createParentObject(result['title'], this.currentLang).subscribe(res => {
+      var sub = this._service.createParentObject(result['title'], this.currentLang).subscribe(res => {
         this.getObj();
         this.DimLoading = false;
 
@@ -178,36 +190,46 @@ export class CmsComponent implements OnInit {
           content: "Operation Failed, please try again", isConfirm: false, messageType: MessageTypes.Danger
         }))
       });
+      this.subscription.add(sub);
+
     });
+
   }
-  DeleteNode(){
-    this.modalService.open(new MessageModal({title:"Confirm",
-    content:"are you sure you want to delete this folder ?",
-    isConfirm:true,messageType:MessageTypes.Warning})).onApprove(()=>{
+  DeleteNode() {
+    this.modalService.open(new MessageModal({
+      title: "Confirm",
+      content: "are you sure you want to delete this folder ?",
+      isConfirm: true, messageType: MessageTypes.Warning
+    })).onApprove(() => {
       this.DimLoading = true;
-      this._service.deleteNode(this.currentNode.parent,this.currentNode.key,this.currentLang).subscribe(res =>{
-          this.DimLoading = false;
-          this.currentNode = null;
-          this.getObj();
-      },err=>{
+      var sub = this._service.deleteNode(this.currentNode.parent, this.currentNode.key, this.currentLang).subscribe(res => {
+        this.DimLoading = false;
+        this.currentNode = null;
+        this.getObj();
+      }, err => {
         this.DimLoading = false;
         this.modalService.open(new MessageModal({
           title: "Error",
           content: "Operation Failed, please try again", isConfirm: false, messageType: MessageTypes.Danger
         }))
       });
+      this.subscription.add(sub);
+
 
     });
   }
-  getFlag(code:string) : string{
+  getFlag(code: string): string {
     var result = "en";
-    langs.forEach(lang =>{
-        if(lang.code == code)
-        {
-          result = lang.flag;
-          return;
-        }
+    langs.forEach(lang => {
+      if (lang.code == code) {
+        result = lang.flag;
+        return;
+      }
     });
     return result;
   }
+  ngOnDestroy() { 
+    this.subscription.unsubscribe();
+  }
+
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
@@ -12,11 +13,12 @@ export class LoginComponent implements OnInit {
   constructor(private _authService:AuthService,private router:Router) { }
   isLoading = false;
   error = true;
+  subscription = new Subscription();
   ngOnInit(): void {
   }
   submit(email:string,password:string){
     this.isLoading = true;
-      this._authService.login(email,password).subscribe(res => {
+      var sub = this._authService.login(email,password).subscribe(res => {
         console.log(res);
         this._authService.saveToken(res.data.token,res.data.id);
         this._authService.$currentUser.next(res.data);
@@ -29,6 +31,10 @@ export class LoginComponent implements OnInit {
         
 
       })
+      this.subscription.add(sub);
   }
-
+  ngOnDestroy(){
+    this.subscription.unsubscribe();
+  }
+  
 }

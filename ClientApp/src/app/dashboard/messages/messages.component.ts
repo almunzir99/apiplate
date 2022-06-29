@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FuiModalService } from 'ngx-fomantic-ui';
+import { Subscription } from 'rxjs';
 import { Message } from 'src/app/core/models/message.model';
 import { MessagesService } from 'src/app/core/services/messages.service';
 import { Column } from 'src/app/shared/data-table/models/column.model';
@@ -22,6 +23,7 @@ export class MessagesComponent implements OnInit {
   ascending = false;
   searchValue = "";
   isDataLoading: boolean = false;
+  subscription = new Subscription();
   constructor(private _service:MessagesService,private modalService:FuiModalService) {
     this.initCols();
     this.initData();
@@ -50,7 +52,7 @@ export class MessagesComponent implements OnInit {
   }
   initData() {
     this.isDataLoading = true;
-    this._service.get(this.pageIndex, this.pageSize,this.searchValue,this.orderBy,this.ascending).subscribe(res => {
+   var sub = this._service.get(this.pageIndex, this.pageSize,this.searchValue,this.orderBy,this.ascending).subscribe(res => {
       this.data = res.data;
       this.totalRecords = res.totalRecords;
       this.totalPages = res.totalPages;
@@ -60,6 +62,7 @@ export class MessagesComponent implements OnInit {
       this.isDataLoading = false;
 
     });
+    this.subscription.add(sub);
   }
   initCols() {
     this.cols = [
@@ -116,4 +119,8 @@ export class MessagesComponent implements OnInit {
     }
     return list;
   }
+  ngOnDestroy (){
+    this.subscription.unsubscribe();
+  }
 }
+
