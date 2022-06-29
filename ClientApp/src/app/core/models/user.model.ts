@@ -12,5 +12,6 @@ export class User extends Base{
     roleId:number;
     role:Role;
     token:string;
+    isManager:boolean;
     
 }

@@ -12,7 +12,7 @@ interface IFormBuilderModalContext {
 })
 export class FormBuilderModalComponent implements OnInit {
 
-  constructor(private modal: FuiBaseModal<IFormBuilderModalContext, any, void>) { }
+  constructor(public modal: FuiBaseModal<IFormBuilderModalContext, any, void>) { }
   onApproved(data:any){
     this.modal.approve(data);
   }
