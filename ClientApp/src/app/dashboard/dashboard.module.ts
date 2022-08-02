@@ -6,8 +6,8 @@ import { DashboardComponent } from './dashboard.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FomanticUIModule } from 'ngx-fomantic-ui';
 import { MenuComponent } from './components/menu/menu.component';
-import { SharedModule } from '../shared/shared.module';
 import { MomentModule } from 'ngx-moment';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
@@ -20,8 +20,8 @@ import { MomentModule } from 'ngx-moment';
     CommonModule,
     DashboardRoutingModule,
     FomanticUIModule,
+    MomentModule,
     SharedModule,
-    MomentModule
   ]
 })
 export class DashboardModule { }

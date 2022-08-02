@@ -18,6 +18,8 @@ namespace apiplate.Controllers
     public class AdminsController : BaseUserController<Admin, AdminResource, AdminRequestResource ,IAdminService>
     {
         private readonly IRolesService _roleService;
+        public override string PermissionTitle => "AdminsPermissions";
+
         public AdminsController(IAdminService service, IUriService uriService, IRolesService roleService,INotificationService _notificationsService) : base(service, uriService, _notificationsService)
         {
             _roleService = roleService;
@@ -36,14 +38,5 @@ namespace apiplate.Controllers
             return actionResult;
         }
         protected override string type => "ADMIN";
-
-        protected async override Task<Permission> GetPermission(string title)
-        {
-            var role = await _roleService.GetRoleByTitle(title);
-            if (role != null)
-                return role.AdminsPermissions;
-            else
-                throw new System.Exception("Permission isn't implemented");
-        }
     }
 }

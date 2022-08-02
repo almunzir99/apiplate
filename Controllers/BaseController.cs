@@ -13,17 +13,19 @@ using apiplate.Wrappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
+using apiplate.Attributes.Permissions;
 
 namespace apiplate.Controllers
 {
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public abstract class BaseController<TModel, TResource, TRequest ,TService> : ControllerBase, IBaseController<TModel, TResource, TRequest ,TService>
-where TModel : BaseModel where TResource : BaseResource where TService : IBaseService<TModel, TResource,TRequest>
+    public abstract class BaseController<TModel, TResource, TRequest, TService> : ControllerBase, IBaseController<TModel, TResource, TRequest, TService>
+where TModel : BaseModel where TResource : BaseResource where TService : IBaseService<TModel, TResource, TRequest>
     {
         protected readonly TService _service;
         protected readonly IUriService _uriSerivce;
+        public abstract string PermissionTitle { get; }
 
         public BaseController(TService service, IUriService uriSerivce)
         {
@@ -31,23 +33,18 @@ where TModel : BaseModel where TResource : BaseResource where TService : IBaseSe
             _uriSerivce = uriSerivce;
 
         }
+        [Permission(true, PermissionTypes.CREATE)]
         [HttpPost]
         public virtual async Task<IActionResult> PostAsync([FromBody] TRequest body)
         {
-            if (!IsAnonymous("PostAsync") && HttpContext.User.GetClaimValue("type") != "manager")
-            {
-                var permission = await GetPermission(HttpContext.User.GetClaimValue("admin_role"));
-                if (permission.Create == false)
-                    return StatusCode(403, "Access Denied");
-            }
             try
             {
                 int _currentUserId = int.Parse(HttpContext.User.GetClaimValue("id"));
                 var result = await _service.CreateAsync(body, _currentUserId);
                 var response = new Response<TResource>(data: result);
                 //create Activity
-                if(!IsAnonymous("PostAsync"))
-                await _service.CreateActivity(_currentUserId, result.Id.Value, "Create");
+                if (!IsAnonymous("PostAsync"))
+                    await _service.CreateActivity(_currentUserId, result.Id.Value, "Create");
                 return Ok(response);
 
             }
@@ -58,15 +55,11 @@ where TModel : BaseModel where TResource : BaseResource where TService : IBaseSe
                 return BadRequest(response);
             }
         }
+        [Permission(true, PermissionTypes.DETELE)]
         [HttpDelete("{id}")]
         public virtual async Task<IActionResult> DeleteAsync(int id)
         {
-            if (!IsAnonymous("DeleteAsync") && HttpContext.User.GetClaimValue("type") != "manager")
-            {
-                var permission = await GetPermission(HttpContext.User.GetClaimValue("admin_role"));
-                if (permission.Delete == false)
-                    return StatusCode(403, "Access Denied");
-            }
+
             try
             {
                 await _service.DeleteAsync(id);
@@ -83,33 +76,23 @@ where TModel : BaseModel where TResource : BaseResource where TService : IBaseSe
                 return BadRequest(response);
             }
         }
+        [Permission(true, PermissionTypes.READ)]
         [HttpGet]
         public virtual async Task<IActionResult> GetAsync([FromQuery] PaginationFilter filter = null, [FromQuery] string title = "", [FromQuery] string orderBy = "LastUpdate", Boolean ascending = true)
         {
-            if (!IsAnonymous("GetAsync") && HttpContext.User.GetClaimValue("type") != "manager")
-            {
-                var permission = await GetPermission(HttpContext.User.GetClaimValue("admin_role"));
-                if (permission.Read == false)
-                    return StatusCode(403, "Access Denied");
-            }
             var validFilter = (filter == null)
            ? new PaginationFilter()
            : new PaginationFilter(pageIndex: filter.PageIndex, pageSize: filter.PageSize);
             int _currentUserId = int.Parse(HttpContext.User.GetClaimValue("id"));
-            var result = await _service.ListAsync(filter,new List<Func<TModel,bool>>(),title, orderBy, ascending);
+            var result = await _service.ListAsync(filter, new List<Func<TModel, bool>>(), title, orderBy, ascending);
             var totalRecords = await _service.GetTotalRecords();
             return Ok(PaginationHelper.CreatePagedResponse<TResource>(result,
             validFilter, _uriSerivce, totalRecords, Request.Path.Value));
         }
+        [Permission(true, PermissionTypes.READ)]
         [HttpGet("{id}")]
         public virtual async Task<IActionResult> SingleAsync(int id)
         {
-            if (!IsAnonymous("SingleAsync") && HttpContext.User.GetClaimValue("type") != "manager")
-            {
-                var permission = await GetPermission(HttpContext.User.GetClaimValue("admin_role"));
-                if (permission.Read == false)
-                    return StatusCode(403, "Access Denied");
-            }
             try
             {
                 var result = await _service.SingleAsync(id);
@@ -124,15 +107,10 @@ where TModel : BaseModel where TResource : BaseResource where TService : IBaseSe
                 return BadRequest(response);
             }
         }
+        [Permission(true, PermissionTypes.UPDATE)]
         [HttpPut("{id}")]
         public virtual async Task<IActionResult> PutAsync(int id, [FromBody] TRequest body)
         {
-            if (!IsAnonymous("PutAsync") && HttpContext.User.GetClaimValue("type") != "manager")
-            {
-                var permission = await GetPermission(HttpContext.User.GetClaimValue("admin_role"));
-                if (permission.Update == false)
-                    return StatusCode(403, "Access Denied");
-            }
             try
             {
                 var result = await _service.UpdateAsync(id, body);
@@ -149,15 +127,10 @@ where TModel : BaseModel where TResource : BaseResource where TService : IBaseSe
                 return BadRequest(response);
             }
         }
+        [Permission(true, PermissionTypes.UPDATE)]
         [HttpPatch("{id}")]
         public virtual async Task<IActionResult> PatchAsync(int id, [FromBody] JsonPatchDocument<TModel> body)
         {
-            if (HttpContext.User.GetClaimValue("type") != "manager")
-            {
-                var permission = await GetPermission(HttpContext.User.GetClaimValue("admin_role"));
-                if (permission.Update == false)
-                    return StatusCode(403, "Access Denied");
-            }
             try
             {
                 var result = await _service.UpdateAsync(id, body);
@@ -178,20 +151,21 @@ where TModel : BaseModel where TResource : BaseResource where TService : IBaseSe
             return result;
 
         }
-        protected abstract Task<Permission> GetPermission(String role);
-        private bool IsAnonymous(string name){
+        private bool IsAnonymous(string name)
+        {
             var type = this.GetType();
-            var targetMethod = type.GetMethods().FirstOrDefault(c => c.Name == name );
-            var isAnonymous = targetMethod.GetCustomAttributes(true).SingleOrDefault(c => c.GetType().Name =="AllowAnonymousAttribute");
-            return isAnonymous == null ? false : true; 
-        
+            var targetMethod = type.GetMethods().FirstOrDefault(c => c.Name == name);
+            var isAnonymous = targetMethod.GetCustomAttributes(true).SingleOrDefault(c => c.GetType().Name == "AllowAnonymousAttribute");
+            return isAnonymous == null ? false : true;
+
         }
-          protected int GetCurrentUserId()
+        protected int GetCurrentUserId()
         {
             int _currentUserId = int.Parse(HttpContext.User.GetClaimValue("id"));
             return _currentUserId;
         }
-        protected string GetCurrentUserType(){
+        protected string GetCurrentUserType()
+        {
             string type = HttpContext.User.GetClaimValue("http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
             return type;
         }

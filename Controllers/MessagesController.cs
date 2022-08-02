@@ -6,6 +6,7 @@ using apiplate.Resources.Requests;
 using apiplate.Utils.URI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using apiplate.Attributes.Permissions;
 
 namespace apiplate.Controllers
 {
@@ -22,7 +23,10 @@ namespace apiplate.Controllers
             _notificationService = notificationService;
         }
 
+        public override string PermissionTitle => "MessagesPermissions";
+
         [AllowAnonymous]
+        [Permission(false, PermissionTypes.CREATE)]
         [HttpPost]
         public override async Task<IActionResult> PostAsync([FromBody] MessageRequestResource body){
              // Push Notifications
@@ -36,14 +40,7 @@ namespace apiplate.Controllers
                 await _notificationService.BroadCastNotification(notification,"admin");
             return await base.PostAsync(body);
         }
-        protected async override Task<Permission> GetPermission(string title)
-        {
-            var role = await _roleService.GetRoleByTitle(title);
-            if (role != null)
-                return role.MessagesPermissions;
-            else
-                throw new System.Exception("Permission isn't implemented");
-        }
+        
     }
 
 }
