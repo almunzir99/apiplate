@@ -11,20 +11,27 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using apiplate.Interfaces;
+using apiplate.Repository;
 
 namespace apiplate.Services
 {
-    public class AdminService : BaseUserService<Admin, AdminResource,AdminRequestResource>, IAdminService
+    public class AdminService : BaseUserService<Admin, AdminResource, AdminRequestResource>, IAdminService
     {
-        public AdminService(IMapper mapper, ApiplateDbContext context, IConfiguration config, ISMTPService smtpSerivce, IWebHostEnvironment webhostEnvironment, IFilesManagerService filesManagerService,IUriService uriService) : base(mapper, context,smtpSerivce ,config,webhostEnvironment, filesManagerService,uriService)
+        public AdminService(IMapper mapper,
+        ApiplateDbContext context,
+        IRepository<Admin> repository,
+        IConfiguration config,
+        ISMTPService smtpSerivce,
+        IWebHostEnvironment webhostEnvironment,
+        IFilesManagerService filesManagerService, 
+        IUriService uriService,IRepository<Admin> _adminsRepository) : 
+        base(mapper, context, smtpSerivce, config, webhostEnvironment, filesManagerService, uriService,repository,_adminsRepository)
         {
+            repository.IncludeableDbSet = repository.IncludeableDbSet.Include(c => c.Activities)
+            .Include(c => c.Role).Include(c => c.Role);
         }
 
         protected override string type => "ADMIN";
-        protected override IQueryable<Admin> GetDbSet()
-        {
-            return base.GetDbSet().Include(c => c.Activities)
-            .Include(c => c.Role).Include(c => c.Role);
-        }
+
     }
 }

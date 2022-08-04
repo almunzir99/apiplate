@@ -20,12 +20,13 @@ using apiplate.Utils.SMTP.Services;
 using Microsoft.Extensions.Configuration;
 using apiplate.Utils.URI;
 using apiplate.Resources.Requests;
+using apiplate.Repository;
 
 namespace apiplate.Services
 {
-    public abstract class BaseUserService<TModel, TResource,TRequest> :
-     BaseService<TModel, TResource,TRequest>,
-     IBaseUserService<TModel, TResource,TRequest>
+    public abstract class BaseUserService<TModel, TResource, TRequest> :
+     BaseService<TModel, TResource, TRequest>,
+     IBaseUserService<TModel, TResource, TRequest>
      where TModel : BasicUserInformation
      where TResource : BasicUserInformationResource
      where TRequest : UserRequestResource
@@ -38,13 +39,21 @@ namespace apiplate.Services
         private readonly IWebHostEnvironment _webhostEnvironment;
         private readonly IFilesManagerService _filesManagerService;
         private readonly IUriService _uriService;
-        public BaseUserService(IMapper mapper, ApiplateDbContext context, ISMTPService smtpService, IConfiguration config, IWebHostEnvironment webhostEnvironment, IFilesManagerService filesManagerService, IUriService uriService) : base(mapper, context, uriService)
+        private readonly DbContext _context;
+        public BaseUserService(IMapper mapper,
+        ApiplateDbContext context,
+        ISMTPService smtpService,
+        IConfiguration config,
+        IWebHostEnvironment webhostEnvironment,
+        IFilesManagerService filesManagerService,
+        IUriService uriService, IRepository<TModel> repository,IRepository<Admin> _adminsRepository) : base(mapper, uriService, repository,_adminsRepository)
         {
             _config = config;
             _smtpSerivce = smtpService;
             _webhostEnvironment = webhostEnvironment;
             _filesManagerService = filesManagerService;
             _uriService = uriService;
+            _context = context;
         }
         public override async Task<TResource> SingleAsync(int id)
         {
@@ -55,7 +64,7 @@ namespace apiplate.Services
         public virtual async Task<TResource> Authenticate(AuthenticationModel model)
         {
             // Get User By Email
-            var user = await GetDbSet().SingleOrDefaultAsync(c => c.Email == model.Email);
+            var user = await _repository.SingleAsync(c => c.Email == model.Email);
             if (user == null)
                 throw new System.Exception("This account isn't available");
             //verify the password
@@ -82,7 +91,7 @@ namespace apiplate.Services
                 HashingHelper.CreateHashPassword(user.Password, out pHash, out pSalt);
                 mappedUser.PasswordHash = pHash;
                 mappedUser.PasswordSalt = pSalt;
-                await _dbSet.AddAsync(mappedUser);
+                await _repository.CreateAsync(mappedUser);
                 await _context.SaveChangesAsync();
                 // Generate Token
                 var secretKey = _config.GetValue<string>("SecretKey:key");
@@ -105,7 +114,7 @@ namespace apiplate.Services
         {
             try
             {
-                var result = await _dbSet.SingleOrDefaultAsync(c => c.Id == id);
+                var result = await _repository.SingleAsync(id);
                 if (result == null)
                     throw new Exception("item is not found");
                 _mapper.Map<TRequest, TModel>(item, result);
@@ -132,7 +141,7 @@ namespace apiplate.Services
         }
         public async Task PasswordRecoveryRequest(string email)
         {
-            var user = await _dbSet.SingleOrDefaultAsync(c => c.Email == email);
+            var user = await _repository.SingleAsync(c => c.Email == email);
             if (user == null)
                 throw new Exception("this user isn't available");
             EmailRequest recovery = new EmailRequest();
@@ -143,7 +152,7 @@ namespace apiplate.Services
             var encryptedText = AESEncryptor.Encrypt(secretKey, serializedObject);
             var path = Path.Combine(_webhostEnvironment.WebRootPath, "assets/templates/passwordRecovery.html");
             var htmlContent = File.ReadAllText(path);
-            htmlContent = htmlContent.Replace("{{passwordRecoveryLink}}", $"https://www.studious.com/password_reset?key={encryptedText}");
+            htmlContent = htmlContent.Replace("{{passwordRecoveryLink}}", $"https://www.apiplate.com/password_reset?key={encryptedText}");
             await _smtpSerivce.SendMessageAsync(_config.GetValue<string>("smtp:username"), user.Email, "Password Recovery", htmlContent, MimeKit.Text.TextFormat.Html);
         }
         public async Task<TResource> GetProfileAsync(int userId)
@@ -160,7 +169,7 @@ namespace apiplate.Services
                 var emailRequestObject = JsonSerializer.Deserialize<EmailRequest>(decryptedKey);
                 if (DateTime.Now.CompareTo(emailRequestObject.ExpiredAt) == 1)
                     throw new Exception("This key is expired");
-                var user = await _dbSet.SingleOrDefaultAsync(c => c.Id == emailRequestObject.userId);
+                var user = await _repository.SingleAsync(c => c.Id == emailRequestObject.userId);
                 if (user == null)
                     throw new Exception("this user isn't available");
                 byte[] pHash, pSalt;
@@ -190,7 +199,7 @@ namespace apiplate.Services
                 var emailProp = patchDoc.Operations.SingleOrDefault(c => c.path == "/email");
                 if (emailProp != null)
                     throw new Exception("you can't change your email");
-                var user = await _dbSet.SingleOrDefaultAsync(c => c.Id == userId);
+                var user = await _repository.SingleAsync(c => c.Id == userId);
                 if (user == null)
                     throw new Exception("this user isn't available");
                 patchDoc.ApplyTo(user);
@@ -216,7 +225,7 @@ namespace apiplate.Services
         {
             try
             {
-                var user = await _dbSet.SingleOrDefaultAsync(c => c.Id == id);
+                var user = await _repository.SingleAsync(c => c.Id == id);
                 if (user == null)
                     throw new Exception("this user isn't available");
                 var validOldPassword = HashingHelper.VerifyPassword(oldPassword, user.PasswordHash, user.PasswordSalt);
@@ -248,7 +257,7 @@ namespace apiplate.Services
         {
             try
             {
-                var user = await _dbSet.SingleOrDefaultAsync(c => c.Id == id);
+                var user = await _repository.SingleAsync(c => c.Id == id);
                 var oldPhoto = user.Photo;
                 if (user == null)
                     throw new Exception("this user isn't available");

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using apiplate.DataBase;
 using apiplate.Interfaces;
 using apiplate.Models;
+using apiplate.Repository;
 using apiplate.Resources;
 using apiplate.Resources.Requests;
 using apiplate.Utils.URI;
@@ -13,22 +14,20 @@ namespace apiplate.Services
 {
     public class RolesService : BaseService<Role, RoleResource,RoleRequestResource>, IRolesService
     {
-        public RolesService(IMapper mapper, ApiplateDbContext context, IUriService uriService) : base(mapper, context, uriService)
+        public RolesService(IMapper mapper, IRepository<Role> repository, IUriService uriService,IRepository<Admin> _adminsRepository) : base(mapper, uriService, repository,_adminsRepository)
         {
-        }
-
-        public async Task<Role> GetRoleByTitle(string title)
-        {
-            return await GetDbSet().SingleOrDefaultAsync(c => c.Title.Equals(title));
-        }
-
-        protected override IQueryable<Role> GetDbSet()
-        {
-            return _context.Roles.Include(c => c.MessagesPermissions)
+            repository.IncludeableDbSet = repository.IncludeableDbSet.Include(c => c.MessagesPermissions)
             .Include(c => c.AdminsPermissions)
             .Include(c => c.RolesPermissions);
             
         }
+
+        public async Task<Role> GetRoleByTitle(string title)
+        {
+            return await _repository.SingleAsync(c => c.Title.Equals(title));
+        }
+
+         
 
 
     }

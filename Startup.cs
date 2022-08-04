@@ -20,6 +20,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using apiplate.Repository;
+using apiplate.Extensions;
 
 namespace apiplate
 {
@@ -45,15 +47,8 @@ namespace apiplate
                 var uri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent());
                 return new UriService(uri);
             });
-            services.AddScoped<IFilesManagerService, FilesManagerService>();
-            services.AddScoped<IAdminService, AdminService>();
-            services.AddScoped<IRolesService, RolesService>();
-            services.AddScoped<IContentManagementService, ContentManagementService>();
-            services.AddScoped<IMessagesService, MessageService>();
-            services.AddScoped<IConnectionsManager, ConnectionsManager>();
-            services.AddScoped<INotificationService, NotificationService>();
-            services.AddScoped<IStatisticsService, StatisticsService>();
-
+            services.RegisterAllRepositoriesScoped();
+            services.RegisterAllServicesScoped();
             services.AddCors(options =>
        {
            options.AddPolicy("CorsPolicy",
