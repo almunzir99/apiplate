@@ -22,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using apiplate.Repository;
 using apiplate.Extensions;
+using apiplate.Helpers;
 
 namespace apiplate
 {
@@ -49,6 +50,7 @@ namespace apiplate
             });
             services.RegisterAllRepositoriesScoped();
             services.RegisterAllServicesScoped();
+            services.AddTransient<ManualMapper>();
             services.AddCors(options =>
        {
            options.AddPolicy("CorsPolicy",

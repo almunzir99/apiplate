@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
+using apiplate.Helpers;
 
 namespace apiplate.Repository
 {
@@ -38,13 +39,15 @@ namespace apiplate.Repository
 
         protected IList<Expression<Func<TModel, object>>> propsToLoad;
         protected readonly IMapper _mapper;
-        public BaseRepository(ApiplateDbContext context, IUriService uriSerivce, IMapper mapper)
+        protected readonly ManualMapper _manualMapper;
+        public BaseRepository(ApiplateDbContext context, IUriService uriSerivce, IMapper mapper, ManualMapper manualMapper)
         {
 
             _context = context;
             _dbSet = _context.Set<TModel>();
             includeableDbSet = _context.Set<TModel>();
             _mapper = mapper;
+            _manualMapper = manualMapper;
         }
 
         public virtual async Task<TModel> CreateAsync(TModel item)
@@ -123,7 +126,7 @@ namespace apiplate.Repository
                 if (result == null)
                     throw new Exception("item is not found");
                 // update values using reflection
-                ManualMap<TModel, TModel>(newItem, result,propsToExclude: new string[]{"Id","CreatedAt"});
+                _manualMapper.ManualMap<TModel, TModel>(newItem, result,propsToExclude: new string[]{"Id","CreatedAt"});
                 result.LastUpdate = DateTime.Now;
                 return result;
             }
@@ -162,65 +165,7 @@ namespace apiplate.Repository
                 throw new System.Exception(exception.Decode());
             }
         }
-        public TDest ManualMap<TSource, TDest>(TSource source, TDest dest,IList<Func<TSource, bool>> conditions = null,string[] propsToExclude = null )
-        {
-            propsToExclude = propsToExclude ?? Array.Empty<string>();
-            var sourceProps = source.GetType().GetProperties();
-            var destProps = dest.GetType().GetProperties();
-
-            foreach (var prop in destProps)
-            {
-                var propName = prop.Name;
-                var propValue = prop.GetValue(dest);
-                foreach (var sourceProp in sourceProps)
-                {
-                    var sourcePropName = sourceProp.Name;
-                    var sourcePropValue = sourceProp.GetValue(source);
-                    if (propName == sourcePropName 
-                    && prop.PropertyType == sourceProp.PropertyType 
-                    && sourcePropValue != default && propsToExclude.Contains(propName) == false)
-                    {
-                        if(conditions != null)
-                        foreach (var condition in conditions)
-                        {
-                            var result = condition.Invoke(source);
-                            if(result == false)
-                            continue;
-                        }
-                        if (prop.PropertyType.IsPrimitive
-                           || prop.PropertyType == typeof(Decimal)
-                           || prop.PropertyType == typeof(String) || prop.PropertyType == typeof(DateTime))
-                        {
-
-                            prop.SetValue(dest,sourcePropValue);
-                        }
-                        else if (typeof(IEnumerable).IsAssignableFrom(source.GetType()))
-                        {
-                            var listPropValue = propValue as IEnumerable;
-                            var listSourcePropValue = sourcePropValue as IEnumerable;
-
-                            foreach (var value in listPropValue)
-                            {
-                                foreach (var sourceValue in listSourcePropValue)
-                                {
-                                    var manualMapMethodInfo = this.GetType().GetMethod("ManualMap");
-                                    manualMapMethodInfo.MakeGenericMethod(sourceProp.PropertyType, prop.PropertyType)
-                                    .Invoke(this, new[] { sourceValue, value,null,null});
-                                }
-
-                            }
-                        }
-                        else
-                        {
-                            var manualMapMethodInfo = this.GetType().GetMethod("ManualMap");
-                            manualMapMethodInfo.MakeGenericMethod(sourceProp.PropertyType, prop.PropertyType)
-                            .Invoke(this, new[] { sourcePropValue, propValue,null,null});
-                        }
-                    }
-                }
-            }
-            return dest;
-        }
+        
     }
 
 
