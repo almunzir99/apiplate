@@ -42,10 +42,10 @@ namespace apiplate.Services
             {
                 throw new System.Exception(exception.Decode());
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
         }
 
@@ -64,10 +64,10 @@ namespace apiplate.Services
             {
                 throw new System.Exception(exception.Decode());
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
         }
 
@@ -110,10 +110,10 @@ namespace apiplate.Services
             {
                 throw new System.Exception(exception.Decode());
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
 
         }

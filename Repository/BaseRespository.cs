@@ -57,10 +57,10 @@ namespace apiplate.Repository
                 await _dbSet.AddAsync(item);
                 return item;
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
 
 
@@ -75,10 +75,10 @@ namespace apiplate.Repository
                     throw new System.Exception("The target Item doesn't Exist");
                 _dbSet.Remove(target);
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
 
 
@@ -130,10 +130,10 @@ namespace apiplate.Repository
                 result.LastUpdate = DateTime.Now;
                 return result;
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
         }
         public virtual async Task<TModel> UpdateAsync(int id, JsonPatchDocument<TModel> newItem)
@@ -147,10 +147,10 @@ namespace apiplate.Repository
                 result.LastUpdate = DateTime.Now;
                 return result;
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
         }
 

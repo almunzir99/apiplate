@@ -5,9 +5,9 @@ using System.Linq;
 
 namespace apiplate.Helpers
 {
-    public class ManualMapper 
+    public class ManualMapper
     {
-        public  TDest ManualMap<TSource, TDest>(TSource source, TDest dest,IList<Func<TSource, bool>> conditions = null,string[] propsToExclude = null )
+        public TDest ManualMap<TSource, TDest>(TSource source, TDest dest, IList<Func<TSource, bool>> conditions = null, string[] propsToExclude = null)
         {
             propsToExclude = propsToExclude ?? Array.Empty<string>();
             var sourceProps = source.GetType().GetProperties();
@@ -21,23 +21,23 @@ namespace apiplate.Helpers
                 {
                     var sourcePropName = sourceProp.Name;
                     var sourcePropValue = sourceProp.GetValue(source);
-                    if (propName == sourcePropName 
-                    && prop.PropertyType == sourceProp.PropertyType 
+                    if (propName == sourcePropName
+                    && prop.PropertyType == sourceProp.PropertyType
                     && sourcePropValue != default && propsToExclude.Contains(propName) == false)
                     {
-                        if(conditions != null)
-                        foreach (var condition in conditions)
-                        {
-                            var result = condition.Invoke(source);
-                            if(result == false)
-                            continue;
-                        }
+                        if (conditions != null)
+                            foreach (var condition in conditions)
+                            {
+                                var result = condition.Invoke(source);
+                                if (result == false)
+                                    continue;
+                            }
                         if (prop.PropertyType.IsPrimitive
                            || prop.PropertyType == typeof(Decimal)
                            || prop.PropertyType == typeof(String) || prop.PropertyType == typeof(DateTime))
                         {
 
-                            prop.SetValue(dest,sourcePropValue);
+                            prop.SetValue(dest, sourcePropValue);
                         }
                         else if (typeof(IEnumerable).IsAssignableFrom(source.GetType()))
                         {
@@ -46,11 +46,27 @@ namespace apiplate.Helpers
 
                             foreach (var value in listPropValue)
                             {
+                                var valueIdProp = value.GetType().GetProperties().SingleOrDefault(c => c.Name == "Id");
+                                if (valueIdProp == null)
+                                    continue;
+                                var valueIdPropValue = valueIdProp.GetValue(value);
+                                if (valueIdPropValue == null)
+                                    continue;
                                 foreach (var sourceValue in listSourcePropValue)
                                 {
-                                    var manualMapMethodInfo = this.GetType().GetMethod("ManualMap");
-                                    manualMapMethodInfo.MakeGenericMethod(sourceProp.PropertyType, prop.PropertyType)
-                                    .Invoke(this, new[] { sourceValue, value,null,null});
+                                    var sourceValueIdProp = sourceValue.GetType().GetProperties().SingleOrDefault(c => c.Name == "Id");
+                                    if (sourceValueIdProp == null)
+                                        continue;
+                                    var sourceValueIdPropValue = sourceValueIdProp.GetValue(value);
+                                    if (sourceValueIdPropValue == null)
+                                        continue;
+
+                                    if (sourceValueIdPropValue == valueIdPropValue)
+                                    {
+                                        var manualMapMethodInfo = this.GetType().GetMethod("ManualMap");
+                                        manualMapMethodInfo.MakeGenericMethod(sourceProp.PropertyType, prop.PropertyType)
+                                        .Invoke(this, new[] { sourceValue, value, null, null });
+                                    }
                                 }
 
                             }
@@ -59,13 +75,13 @@ namespace apiplate.Helpers
                         {
                             var manualMapMethodInfo = this.GetType().GetMethod("ManualMap");
                             manualMapMethodInfo.MakeGenericMethod(sourceProp.PropertyType, prop.PropertyType)
-                            .Invoke(this, new[] { sourcePropValue, propValue,null,null});
+                            .Invoke(this, new[] { sourcePropValue, propValue, null, null });
                         }
                     }
                 }
             }
             return dest;
         }
-        
+
     }
 }

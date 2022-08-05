@@ -51,10 +51,10 @@ namespace apiplate.Services
                 return result;
             }
 
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
 
         }
@@ -67,10 +67,10 @@ namespace apiplate.Services
                 await _repository.complete();
 
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
 
         }
@@ -194,10 +194,10 @@ namespace apiplate.Services
                 var mappedResult = _mapper.Map<TModel, TResource>(result);
                 return mappedResult;
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
         }
         protected virtual string GetSearchPropValue(TModel obj)

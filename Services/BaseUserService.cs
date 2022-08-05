@@ -184,10 +184,10 @@ namespace apiplate.Services
                 throw new System.Exception(exception.Decode());
 
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
         }
         public async Task<TResource> UpdatePersonalInfo(int userId, JsonPatchDocument<TModel> patchDoc)
@@ -214,10 +214,10 @@ namespace apiplate.Services
                 throw new System.Exception(exception.Decode());
 
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
         }
 
@@ -243,10 +243,10 @@ namespace apiplate.Services
                 throw new System.Exception(exception.Decode());
 
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
 
 
@@ -275,10 +275,10 @@ namespace apiplate.Services
                 throw new System.Exception(exception.Decode());
 
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
 
         }

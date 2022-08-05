@@ -44,10 +44,10 @@ namespace apiplate.Services.ContentManagement
 
 
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
         }
 
@@ -66,10 +66,10 @@ namespace apiplate.Services.ContentManagement
 
 
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
-                throw e;
+                throw;
             }
         }
 
