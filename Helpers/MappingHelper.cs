@@ -5,9 +5,9 @@ using System.Linq;
 
 namespace apiplate.Helpers
 {
-    public class ManualMapper
+    public class MappingHelper
     {
-        public TDest ManualMap<TSource, TDest>(TSource source, TDest dest, IList<Func<TSource, bool>> conditions = null, string[] propsToExclude = null)
+        public TDest Map<TSource, TDest>(TSource source, TDest dest, IList<Func<TSource, bool>> conditions = null, string[] propsToExclude = null)
         {
             propsToExclude = propsToExclude ?? Array.Empty<string>();
             var sourceProps = source.GetType().GetProperties();
@@ -63,8 +63,8 @@ namespace apiplate.Helpers
 
                                     if (sourceValueIdPropValue == valueIdPropValue)
                                     {
-                                        var manualMapMethodInfo = this.GetType().GetMethod("ManualMap");
-                                        manualMapMethodInfo.MakeGenericMethod(sourceProp.PropertyType, prop.PropertyType)
+                                        var mapMethodInfo = this.GetType().GetMethod("Map");
+                                        mapMethodInfo.MakeGenericMethod(sourceProp.PropertyType, prop.PropertyType)
                                         .Invoke(this, new[] { sourceValue, value, null, null });
                                     }
                                 }
@@ -73,8 +73,8 @@ namespace apiplate.Helpers
                         }
                         else
                         {
-                            var manualMapMethodInfo = this.GetType().GetMethod("ManualMap");
-                            manualMapMethodInfo.MakeGenericMethod(sourceProp.PropertyType, prop.PropertyType)
+                            var mapMethodInfo = this.GetType().GetMethod("Map");
+                            mapMethodInfo.MakeGenericMethod(sourceProp.PropertyType, prop.PropertyType)
                             .Invoke(this, new[] { sourcePropValue, propValue, null, null });
                         }
                     }

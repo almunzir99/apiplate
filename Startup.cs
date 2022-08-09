@@ -50,7 +50,7 @@ namespace apiplate
             });
             services.RegisterAllRepositoriesScoped();
             services.RegisterAllServicesScoped();
-            services.AddTransient<ManualMapper>();
+            services.AddTransient<MappingHelper>();
             services.AddCors(options =>
        {
            options.AddPolicy("CorsPolicy",

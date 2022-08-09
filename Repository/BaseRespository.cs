@@ -36,18 +36,14 @@ namespace apiplate.Repository
                 includeableDbSet = value;
             }
         }
-
-        protected IList<Expression<Func<TModel, object>>> propsToLoad;
-        protected readonly IMapper _mapper;
-        protected readonly ManualMapper _manualMapper;
-        public BaseRepository(ApiplateDbContext context, IUriService uriSerivce, IMapper mapper, ManualMapper manualMapper)
+        protected readonly MappingHelper _mappingHelper;
+        public BaseRepository(ApiplateDbContext context, MappingHelper mappingHelper)
         {
 
             _context = context;
             _dbSet = _context.Set<TModel>();
             includeableDbSet = _context.Set<TModel>();
-            _mapper = mapper;
-            _manualMapper = manualMapper;
+            _mappingHelper = mappingHelper;
         }
 
         public virtual async Task<TModel> CreateAsync(TModel item)
@@ -126,7 +122,7 @@ namespace apiplate.Repository
                 if (result == null)
                     throw new Exception("item is not found");
                 // update values using reflection
-                _manualMapper.ManualMap<TModel, TModel>(newItem, result,propsToExclude: new string[]{"Id","CreatedAt"});
+                _mappingHelper.Map<TModel, TModel>(newItem, result,propsToExclude: new string[]{"Id","CreatedAt"});
                 result.LastUpdate = DateTime.Now;
                 return result;
             }
